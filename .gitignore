@@ -1,0 +1,19 @@
+# Local experiment artifacts and dependency/build caches; never publish models.
+.work/
+node_modules/
+web/node_modules/
+dist/
+!internal/uiassets/dist/
+!internal/uiassets/dist/**
+web/*.tsbuildinfo
+web/vite.config.js
+web/vite.config.d.ts
+*.test
+__pycache__/
+.DS_Store
+tests/feasibility/.bin/
+
+# Private discovery and local development records
+docs/research/
+docs/implementation/*
+!docs/implementation/u01-source-verification.json
