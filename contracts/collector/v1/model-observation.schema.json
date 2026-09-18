@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/collector/v1/model-observation.schema.json",
+  "title": "Bounded Ollama model inventory observation v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["model_id", "digest", "loaded", "reported_size_bytes", "reported_size_vram_bytes", "missing", "provenance"],
+  "properties": {
+    "model_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "digest": {"$ref": "common.schema.json#/$defs/sha256"},
+    "loaded": {"type": "boolean"},
+    "reported_size_bytes": {"anyOf": [{"$ref": "common.schema.json#/$defs/uint64Decimal"}, {"type": "null"}]},
+    "reported_size_vram_bytes": {"anyOf": [{"$ref": "common.schema.json#/$defs/uint64Decimal"}, {"type": "null"}]},
+    "missing": {"type": "array", "maxItems": 2, "items": {"$ref": "common.schema.json#/$defs/missingCapability"}},
+    "provenance": {"$ref": "common.schema.json#/$defs/provenance"}
+  }
+}

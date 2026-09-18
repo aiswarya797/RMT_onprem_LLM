@@ -1,0 +1,77 @@
+{
+  "bundle_version": "llm-monitor-bundle/1.0",
+  "export_id": "10000000-0000-4000-8000-000000000001",
+  "deployment_id": "00000000-0000-4000-8000-000000000001",
+  "deployment_generation": "77777777-7777-4777-8777-777777777777",
+  "created_ms": 1789473600000,
+  "snapshot_id": "20000000-0000-4000-8000-000000000001",
+  "snapshot_revision": 1,
+  "registry_revision": "mac-ollama-1",
+  "timezone": "Asia/Kolkata",
+  "clock_semantics": "single_host_monotonic_aligned",
+  "redaction": {
+    "default_aliases": true,
+    "model_digest_retained": true,
+    "original_infrastructure_names": false
+  },
+  "execution_status": "synthetic_fixture",
+  "entries": [
+    {
+      "path": "README.html",
+      "media_type": "text/html",
+      "schema_id": null,
+      "size_bytes": 100,
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "provenance": "generated_static_html",
+      "validation": "script_free_html"
+    },
+    {
+      "path": "incident.json",
+      "media_type": "application/json",
+      "schema_id": "https://llm-monitor.local/contracts/bundle/v1/incident.schema.json",
+      "size_bytes": 100,
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "provenance": "generated_structured",
+      "validation": "schema_validated"
+    },
+    {
+      "path": "inventory.json",
+      "media_type": "application/json",
+      "schema_id": "https://llm-monitor.local/contracts/bundle/v1/inventory.schema.json",
+      "size_bytes": 100,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "provenance": "generated_structured",
+      "validation": "schema_validated"
+    },
+    {
+      "path": "configuration.json",
+      "media_type": "application/json",
+      "schema_id": "https://llm-monitor.local/contracts/bundle/v1/configuration.schema.json",
+      "size_bytes": 100,
+      "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "provenance": "generated_structured",
+      "validation": "schema_validated"
+    },
+    {
+      "path": "series.ndjson",
+      "media_type": "application/x-ndjson",
+      "schema_id": "https://llm-monitor.local/contracts/bundle/v1/series-record.schema.json",
+      "size_bytes": 100,
+      "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "provenance": "generated_structured",
+      "validation": "schema_validated"
+    },
+    {
+      "path": "coverage.json",
+      "media_type": "application/json",
+      "schema_id": "https://llm-monitor.local/contracts/bundle/v1/coverage.schema.json",
+      "size_bytes": 100,
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "provenance": "generated_structured",
+      "validation": "schema_validated"
+    }
+  ],
+  "payload_uncompressed_bytes": 600,
+  "manifest_size_bytes": 100,
+  "total_archive_decoded_bytes": 700
+}

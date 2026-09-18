@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/collector/v1/process-observation.schema.json",
+  "title": "Bounded same-user process observation v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["host_id", "boot_id", "pid", "process_start_identity", "process_key", "display_basename", "category", "target_id", "association_quality", "cpu_busy_ratio", "physical_footprint_bytes", "missing", "provenance"],
+  "properties": {
+    "host_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "boot_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "pid": {"type": "integer", "minimum": 1, "maximum": 2147483647},
+    "process_start_identity": {"type": "string", "pattern": "^[1-9][0-9]{0,19}$"},
+    "process_key": {"$ref": "common.schema.json#/$defs/sha256"},
+    "display_basename": {"enum": ["ollama", "llm-monitor", "llm-monitor-collector", null]},
+    "category": {"enum": ["selected_ollama", "rmt", "other_same_user"]},
+    "target_id": {"anyOf": [{"$ref": "common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+    "association_quality": {"enum": ["verified", "declared_unverified", "none"]},
+    "cpu_busy_ratio": {"anyOf": [{"type": "number", "minimum": 0, "maximum": 1}, {"type": "null"}]},
+    "physical_footprint_bytes": {"anyOf": [{"$ref": "common.schema.json#/$defs/uint64Decimal"}, {"type": "null"}]},
+    "missing": {"type": "array", "maxItems": 2, "items": {"$ref": "common.schema.json#/$defs/missingCapability"}},
+    "provenance": {"$ref": "common.schema.json#/$defs/provenance"}
+  }
+}

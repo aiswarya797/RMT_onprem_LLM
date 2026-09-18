@@ -1,0 +1,5816 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "RMT API and collector protocol",
+    "version": "1.0.0",
+    "description": "U01 contract with the typed T01/R15 U02 browser bootstrap, session-read and foundation-status prerequisites."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:9443",
+      "description": "Default user-owned loopback UI/API listener"
+    }
+  ],
+  "paths": {
+    "/api/v1/auth/bootstrap": {
+      "get": {
+        "operationId": "auth_bootstrap_state",
+        "summary": "auth.bootstrap.state",
+        "x-permission": "unauthenticated",
+        "x-audit": "none",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "BootstrapState",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/bootstrapState"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "auth_bootstrap_create",
+        "summary": "auth.bootstrap.create",
+        "x-permission": "unauthenticated",
+        "x-audit": "security",
+        "x-generation-precondition": "exempt_auth",
+        "x-idempotency": "recommended",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/bootstrapAdmin"
+              }
+            }
+          }
+        },
+        "security": [],
+        "responses": {
+          "201": {
+            "description": "Session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/session"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/sessions": {
+      "post": {
+        "operationId": "auth_login",
+        "summary": "auth.login",
+        "x-permission": "unauthenticated",
+        "x-audit": "security",
+        "x-generation-precondition": "exempt_auth",
+        "x-idempotency": "recommended",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/credentials"
+              }
+            }
+          }
+        },
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/session"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/session": {
+      "get": {
+        "operationId": "auth_session_get",
+        "summary": "auth.session.get",
+        "x-permission": "authenticated_user",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/session"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "auth_logout",
+        "summary": "auth.logout",
+        "x-permission": "authenticated_user",
+        "x-audit": "security",
+        "x-generation-precondition": "exempt_auth",
+        "x-idempotency": "recommended",
+        "parameters": [
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation completed with no response body"
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/tokens": {
+      "get": {
+        "operationId": "auth_tokens_list",
+        "summary": "auth.tokens.list",
+        "x-permission": "own_account",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "TokenList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/tokenList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "auth_tokens_create",
+        "summary": "auth.tokens.create",
+        "x-permission": "own_account",
+        "x-audit": "security",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/tokenCreate"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "TokenOnce",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/tokenOnce"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/tokens/{token_id}": {
+      "delete": {
+        "operationId": "auth_tokens_revoke",
+        "summary": "auth.tokens.revoke",
+        "x-permission": "own_account",
+        "x-audit": "security",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "token_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "TokenRevocation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/tokenRevocation"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/deployment-state": {
+      "get": {
+        "operationId": "deployment_state",
+        "summary": "deployment.state",
+        "x-permission": "authenticated_user",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "DeploymentState",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "deployment-state.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/status": {
+      "get": {
+        "operationId": "foundation_status",
+        "summary": "foundation.status",
+        "x-permission": "authenticated_user",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "FoundationStatus",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/foundationStatus"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/overview": {
+      "get": {
+        "operationId": "overview_read",
+        "summary": "overview.read",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/overview"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/hosts": {
+      "get": {
+        "operationId": "hosts_list",
+        "summary": "hosts.list",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "HostList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/hostList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/hosts/{host_id}": {
+      "get": {
+        "operationId": "hosts_show",
+        "summary": "hosts.show",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "host_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Host",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/host"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/targets": {
+      "get": {
+        "operationId": "targets_list",
+        "summary": "targets.list",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "TargetList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/targetList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/targets/{target_id}": {
+      "get": {
+        "operationId": "targets_show",
+        "summary": "targets.show",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "target_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Target",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/target"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/monitor-health/summary": {
+      "get": {
+        "operationId": "monitor_health_summary",
+        "summary": "monitor_health.summary",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "MonitorHealth",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/monitorHealth"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/monitor-health": {
+      "get": {
+        "operationId": "monitor_health_full",
+        "summary": "monitor_health.full",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "MonitorHealth",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/monitorHealth"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/enrollments": {
+      "post": {
+        "operationId": "enrollments_create",
+        "summary": "enrollments.create",
+        "x-permission": "admin",
+        "x-audit": "security",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/enrollmentCreate"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "EnrollmentToken",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/enrollmentToken"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/hosts/{host_id}/revoke": {
+      "post": {
+        "operationId": "hosts_revoke",
+        "summary": "hosts.revoke",
+        "x-permission": "admin",
+        "x-audit": "security",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "host_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Host",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/host"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/hosts/{host_id}/retire": {
+      "post": {
+        "operationId": "hosts_retire",
+        "summary": "hosts.retire",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "host_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Host",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/host"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/targets/{target_id}/connectivity-checks": {
+      "post": {
+        "operationId": "targets_connectivity_check",
+        "summary": "targets.connectivity_check",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "target_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "job.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/series": {
+      "get": {
+        "operationId": "series_query",
+        "summary": "series.query",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "scope",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 36,
+              "maxLength": 64
+            }
+          },
+          {
+            "name": "metric",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/metricId"
+            }
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "resolution",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "auto",
+                "raw",
+                "minute",
+                "hour"
+              ]
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SeriesPage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/seriesPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events": {
+      "get": {
+        "operationId": "events_list",
+        "summary": "events.list",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "EventList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/eventList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/incidents": {
+      "get": {
+        "operationId": "incidents_list",
+        "summary": "incidents.list",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "IncidentList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "incident-response.schema.json#/$defs/incidentList"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "incidents_create",
+        "summary": "incidents.create",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "incident-request.schema.json#/$defs/manualIncidentCreate"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Immutable incident creation metadata result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "incident-response.schema.json#/$defs/incidentSummary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/incidents/{incident_id}": {
+      "get": {
+        "operationId": "incidents_show",
+        "summary": "incidents.show",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "incident_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Incident",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "incident-response.schema.json#/$defs/incidentDetail"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "incidents_update",
+        "summary": "incidents.update",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "incident_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "incident-request.schema.json#/$defs/manualIncidentUpdate"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Immutable incident metadata mutation result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "incident-response.schema.json#/$defs/incidentSummary"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/incidents/{incident_id}/acknowledgements": {
+      "post": {
+        "operationId": "incidents_acknowledge",
+        "summary": "incidents.acknowledge",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "incident_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/acknowledgement"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Persisted alert action result; refresh current incident state after an exact retry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/alertControl"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/incidents/{incident_id}/owner": {
+      "patch": {
+        "operationId": "incidents_assign",
+        "summary": "incidents.assign",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "incident_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/assignment"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Incident",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/incident"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/incidents/{incident_id}/mute": {
+      "post": {
+        "operationId": "incidents_mute",
+        "summary": "incidents.mute",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "incident_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/mute"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Persisted alert action result; refresh current incident state after an exact retry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/alertControl"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "incidents_unmute",
+        "summary": "incidents.unmute",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "incident_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Persisted alert action result; refresh current incident state after an exact retry.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/alertControl"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/annotations": {
+      "post": {
+        "operationId": "annotations_create",
+        "summary": "annotations.create",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "incident-request.schema.json#/$defs/annotationCreate"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Annotation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "incident-response.schema.json#/$defs/annotation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/annotations/{annotation_id}": {
+      "patch": {
+        "operationId": "annotations_edit",
+        "summary": "annotations.edit",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "incident-request.schema.json#/$defs/annotationEdit"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Annotation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "incident-response.schema.json#/$defs/annotation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/comparisons/preview": {
+      "get": {
+        "operationId": "comparisons_preview",
+        "summary": "comparisons.preview",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "comparison_kind",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "request_run",
+                "host_window"
+              ]
+            }
+          },
+          {
+            "name": "scope_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "metric_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "request.client.first_byte_ms",
+                "request.client.first_content_ms",
+                "request.client.total_ms",
+                "request.runtime.total_duration_ms",
+                "request.runtime.load_duration_ms",
+                "request.runtime.prompt_eval_duration_ms",
+                "request.runtime.eval_duration_ms",
+                "request.runtime.prompt_tokens",
+                "request.runtime.output_tokens",
+                "host.cpu.busy_ratio",
+                "host.memory.pressure_level",
+                "host.memory.compressed_bytes",
+                "host.memory.swap_used_bytes",
+                "host.disk.free_bytes",
+                "host.network.received_bytes_total",
+                "host.network.sent_bytes_total"
+              ]
+            }
+          },
+          {
+            "name": "before_run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "after_run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "declared_intervention_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "host_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "source_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "definition_revision",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "const": "mac-ollama-1"
+            }
+          },
+          {
+            "name": "method_revision",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            }
+          },
+          {
+            "name": "resolution_tier",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "raw",
+                "minute",
+                "hour"
+              ]
+            }
+          },
+          {
+            "name": "epoch_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "clock_method",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "const": "single_host_monotonic_aligned"
+            }
+          },
+          {
+            "name": "minimum_coverage_ratio",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "const": 0.9
+            }
+          },
+          {
+            "name": "before_start_ms",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "before_end_ms",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "before_coverage_ratio",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          {
+            "name": "after_start_ms",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "after_end_ms",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          {
+            "name": "after_coverage_ratio",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        ],
+        "x-query-contract": {
+          "$ref": "action-request.schema.json#/$defs/comparison"
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comparison",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "comparison.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/comparisons": {
+      "post": {
+        "operationId": "comparisons_create",
+        "summary": "comparisons.create",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/comparison"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "job.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/comparisons/{comparison_id}": {
+      "get": {
+        "operationId": "comparisons_show",
+        "summary": "comparisons.show",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "comparison_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comparison",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "comparison.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/incidents/{incident_id}/comparisons": {
+      "post": {
+        "operationId": "comparisons_attach",
+        "summary": "comparisons.attach",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "incident_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/reference"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Incident",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/incident"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rules": {
+      "get": {
+        "operationId": "rules_list",
+        "summary": "rules.list",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "RuleList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/ruleList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "rules_create",
+        "summary": "rules.create",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/rule"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rule",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/rule"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/rules/{rule_id}": {
+      "get": {
+        "operationId": "rules_show",
+        "summary": "rules.show",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "rule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rule",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/rule"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "rules_update",
+        "summary": "rules.update",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "rule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/rule"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rule",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/rule"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/maintenance-windows": {
+      "post": {
+        "operationId": "maintenance_create",
+        "summary": "maintenance.create",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/mute"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "MaintenanceWindow",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/maintenanceWindow"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/maintenance-windows/{window_id}": {
+      "delete": {
+        "operationId": "maintenance_remove",
+        "summary": "maintenance.remove",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "window_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation completed with no response body"
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/destinations": {
+      "get": {
+        "operationId": "destinations_list",
+        "summary": "destinations.list",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "DestinationList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/destinationList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "destinations_create",
+        "summary": "destinations.create",
+        "x-permission": "admin",
+        "x-audit": "security",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/destination"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Destination",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/destination"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/destinations/{destination_id}": {
+      "get": {
+        "operationId": "destinations_show",
+        "summary": "destinations.show",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "destination_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Destination",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/destination"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "destinations_update",
+        "summary": "destinations.update",
+        "x-permission": "admin",
+        "x-audit": "security",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "destination_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/destination"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Destination",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/destination"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "destinations_remove",
+        "summary": "destinations.remove",
+        "x-permission": "admin",
+        "x-audit": "security",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "destination_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation completed with no response body"
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/destinations/{destination_id}/tests": {
+      "post": {
+        "operationId": "destinations_test",
+        "summary": "destinations.test",
+        "x-permission": "admin",
+        "x-audit": "external_send",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "destination_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "job.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/deliveries/{delivery_id}": {
+      "get": {
+        "operationId": "deliveries_show",
+        "summary": "deliveries.show",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "delivery_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delivery",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/delivery"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/deliveries/{delivery_id}/retry": {
+      "post": {
+        "operationId": "deliveries_retry",
+        "summary": "deliveries.retry",
+        "x-permission": "admin",
+        "x-audit": "external_send",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "delivery_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delivery",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/delivery"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/probes": {
+      "post": {
+        "operationId": "probes_import",
+        "summary": "probes.import",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "probe-import.schema.json"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "job.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/attachments": {
+      "post": {
+        "operationId": "attachments_stage",
+        "summary": "attachments.stage",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "filename",
+                  "media_type",
+                  "size_bytes",
+                  "sha256",
+                  "file"
+                ],
+                "properties": {
+                  "filename": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[^/\\\\]+$"
+                  },
+                  "media_type": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "size_bytes": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10485760
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "maxLength": 10485760
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Attachment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/attachment"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/attachments/{attachment_id}": {
+      "get": {
+        "operationId": "attachments_show",
+        "summary": "attachments.show",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "attachment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Attachment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/attachment"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "attachments_remove",
+        "summary": "attachments.remove",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "attachment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation completed with no response body"
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports": {
+      "post": {
+        "operationId": "exports_preview",
+        "summary": "exports.preview",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/exportPreview"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "job.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports/{export_id}/confirm": {
+      "post": {
+        "operationId": "exports_confirm",
+        "summary": "exports.confirm",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "export_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/exportConfirm"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "job.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports/{export_id}": {
+      "get": {
+        "operationId": "exports_show",
+        "summary": "exports.show",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "export_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Export",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/export"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports/{export_id}/download": {
+      "get": {
+        "operationId": "exports_download",
+        "summary": "exports.download",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "export_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Immutable diagnostic bundle bytes",
+            "headers": {
+              "Digest": {
+                "required": true,
+                "schema": {
+                  "type": "string",
+                  "pattern": "^sha-256=:[A-Za-z0-9+/=]+:$"
+                }
+              },
+              "Content-Length": {
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 104857600
+                }
+              }
+            },
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/settings/retention": {
+      "get": {
+        "operationId": "retention_show",
+        "summary": "retention.show",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retention",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/retention"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "retention_set",
+        "summary": "retention.set",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/retention"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retention",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/retention"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/storage/forecast": {
+      "get": {
+        "operationId": "storage_forecast",
+        "summary": "storage.forecast",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "StorageForecast",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/storageForecast"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "operationId": "users_list",
+        "summary": "users.list",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "UserList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/userList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "users_create",
+        "summary": "users.create",
+        "x-permission": "admin",
+        "x-audit": "security",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/userCreate"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/user"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{user_id}": {
+      "get": {
+        "operationId": "users_show",
+        "summary": "users.show",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/user"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "users_update",
+        "summary": "users.update",
+        "x-permission": "admin",
+        "x-audit": "security",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/revisionPatch"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/user"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions": {
+      "get": {
+        "operationId": "sessions_list",
+        "summary": "sessions.list",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SessionList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/sessionList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sessions/{session_id}": {
+      "delete": {
+        "operationId": "sessions_revoke",
+        "summary": "sessions.revoke",
+        "x-permission": "admin",
+        "x-audit": "security",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation completed with no response body"
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/jobs": {
+      "get": {
+        "operationId": "jobs_list",
+        "summary": "jobs.list",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JobList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/jobList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/jobs/{job_id}": {
+      "get": {
+        "operationId": "jobs_show",
+        "summary": "jobs.show",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "job.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/jobs/{job_id}/cancel": {
+      "post": {
+        "operationId": "jobs_cancel",
+        "summary": "jobs.cancel",
+        "x-permission": "admin",
+        "x-audit": "mutation",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Job",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "job.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/audit": {
+      "get": {
+        "operationId": "audit_list",
+        "summary": "audit.list",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AuditList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/auditList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recovery-grants": {
+      "post": {
+        "operationId": "recovery_grants_create",
+        "summary": "recovery_grants.create",
+        "x-permission": "admin",
+        "x-audit": "local_recovery",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "action-request.schema.json#/$defs/recoveryGrant"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "RecoveryGrant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../collector/v1/recovery-grant.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "recovery_grants_list",
+        "summary": "recovery_grants.list",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "RecoveryGrantList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/recoveryGrantList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recovery-grants/{grant_id}": {
+      "get": {
+        "operationId": "recovery_grants_show",
+        "summary": "recovery_grants.show",
+        "x-permission": "admin",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "grant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "RecoveryGrant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../collector/v1/recovery-grant.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recovery-grants/{grant_id}/revoke": {
+      "post": {
+        "operationId": "recovery_grants_revoke",
+        "summary": "recovery_grants.revoke",
+        "x-permission": "admin",
+        "x-audit": "local_recovery",
+        "x-generation-precondition": "required",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "grant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "If-Deployment-Generation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Validated before idempotency lookup."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": false,
+            "description": "Required when cookie authentication is used.",
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 256
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "RecoveryGrant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../collector/v1/recovery-grant.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collector/v1/sessions": {
+      "post": {
+        "operationId": "collector_session_activate",
+        "summary": "collector.session.activate",
+        "x-permission": "collector_certificate",
+        "x-audit": "mutation",
+        "x-generation-precondition": "collector_security_generation",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../collector/v1/session.schema.json"
+              }
+            }
+          }
+        },
+        "servers": [
+          {
+            "url": "https://{hub}:9444",
+            "description": "Configured private hub collector listener",
+            "variables": {
+              "hub": {
+                "default": "127.0.0.1"
+              }
+            }
+          }
+        ],
+        "security": [
+          {
+            "mutualTLS": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CollectorSessionResult",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../collector/v1/session-result.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collector/v1/inventory": {
+      "post": {
+        "operationId": "collector_inventory_register",
+        "summary": "collector.inventory.register",
+        "x-permission": "collector_certificate",
+        "x-audit": "mutation",
+        "x-generation-precondition": "collector_security_generation",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../collector/v1/inventory.schema.json"
+              }
+            }
+          }
+        },
+        "servers": [
+          {
+            "url": "https://{hub}:9444",
+            "description": "Configured private hub collector listener",
+            "variables": {
+              "hub": {
+                "default": "127.0.0.1"
+              }
+            }
+          }
+        ],
+        "security": [
+          {
+            "mutualTLS": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "InventoryResult",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../collector/v1/inventory-result.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collector/v1/batches": {
+      "post": {
+        "operationId": "collector_batch_ingest",
+        "summary": "collector.batch.ingest",
+        "x-permission": "collector_certificate",
+        "x-audit": "mutation",
+        "x-generation-precondition": "collector_security_generation",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../collector/v1/batch.schema.json"
+              }
+            }
+          }
+        },
+        "servers": [
+          {
+            "url": "https://{hub}:9444",
+            "description": "Configured private hub collector listener",
+            "variables": {
+              "hub": {
+                "default": "127.0.0.1"
+              }
+            }
+          }
+        ],
+        "security": [
+          {
+            "mutualTLS": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "BatchAck",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../collector/v1/batch-ack.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collector/v1/source-status": {
+      "post": {
+        "operationId": "collector_status_ingest",
+        "summary": "collector.status.ingest",
+        "x-permission": "collector_certificate",
+        "x-audit": "mutation",
+        "x-generation-precondition": "collector_security_generation",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../collector/v1/source-status.schema.json"
+              }
+            }
+          }
+        },
+        "servers": [
+          {
+            "url": "https://{hub}:9444",
+            "description": "Configured private hub collector listener",
+            "variables": {
+              "hub": {
+                "default": "127.0.0.1"
+              }
+            }
+          }
+        ],
+        "security": [
+          {
+            "mutualTLS": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "StatusAck",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../collector/v1/status-ack.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collector/v1/recovery-replay": {
+      "post": {
+        "operationId": "collector_recovery_replay",
+        "summary": "collector.recovery.replay",
+        "x-permission": "collector_certificate",
+        "x-audit": "mutation",
+        "x-generation-precondition": "collector_security_generation",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../collector/v1/recovery-replay.schema.json"
+              }
+            }
+          }
+        },
+        "servers": [
+          {
+            "url": "https://{hub}:9444",
+            "description": "Configured private hub collector listener",
+            "variables": {
+              "hub": {
+                "default": "127.0.0.1"
+              }
+            }
+          }
+        ],
+        "security": [
+          {
+            "mutualTLS": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "RecoveryAck",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../collector/v1/recovery-ack.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/collector/v1/enrollments": {
+      "post": {
+        "operationId": "collector_enrollment_exchange",
+        "summary": "collector.enrollment.exchange",
+        "x-permission": "unauthenticated",
+        "x-audit": "security",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "required",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 128
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../collector/v1/enrollment.schema.json"
+              }
+            }
+          }
+        },
+        "servers": [
+          {
+            "url": "https://{hub}:9444",
+            "description": "Configured private hub collector listener",
+            "variables": {
+              "hub": {
+                "default": "127.0.0.1"
+              }
+            }
+          }
+        ],
+        "security": [
+          {
+            "enrollmentToken": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CollectorEnrollmentResult",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../collector/v1/enrollment-result.schema.json"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/history/catalog": {
+      "get": {
+        "operationId": "history_catalog_read",
+        "summary": "history.catalog.read",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "HistoryCatalog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/historyCatalog"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/incidents/{incident_id}/annotations": {
+      "get": {
+        "operationId": "annotations_list",
+        "summary": "annotations.list",
+        "x-permission": "admin_or_viewer",
+        "x-audit": "access_only",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [
+          {
+            "name": "incident_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 100
+            }
+          }
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          },
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Bounded safe error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "error.schema.json"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "AnnotationList",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "incident-response.schema.json#/$defs/annotationList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/healthz": {
+      "get": {
+        "operationId": "monitor_health_liveness",
+        "summary": "Process liveness",
+        "x-permission": "unauthenticated",
+        "x-audit": "none",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "HealthCheck",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/healthCheck"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Not ready (503) or invalid health check",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "response.schema.json#/$defs/healthCheck"
+                    },
+                    {
+                      "$ref": "error.schema.json"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/readyz": {
+      "get": {
+        "operationId": "monitor_health_readiness",
+        "summary": "Storage and evaluator readiness; HTTP 503 when unavailable",
+        "x-permission": "unauthenticated",
+        "x-audit": "none",
+        "x-generation-precondition": "not_applicable",
+        "x-idempotency": "exempt",
+        "parameters": [],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "HealthCheck",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "response.schema.json#/$defs/healthCheck"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Not ready (503) or invalid health check",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "response.schema.json#/$defs/healthCheck"
+                    },
+                    {
+                      "$ref": "error.schema.json"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "rmt_session"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "mutualTLS": {
+        "type": "mutualTLS"
+      },
+      "enrollmentToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "One-use Bearer enrollment token over pinned server TLS; no client certificate exists yet."
+      }
+    }
+  }
+}

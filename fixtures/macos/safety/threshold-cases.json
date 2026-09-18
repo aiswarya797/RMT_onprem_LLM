@@ -1,0 +1,98 @@
+[
+  {
+    "name": "normal_with_guarded_headroom",
+    "elapsed_seconds": 0,
+    "heartbeat_delay_seconds": 0.01,
+    "baseline_owned_bytes": null,
+    "require_owned_tree": false,
+    "sample": {
+      "pressure": {"ok": true, "raw": 1},
+      "headroom": {"ok": true, "consistent": true, "independently_validated": true, "floor_bytes": 2684354560},
+      "swap": {"ok": true, "used_bytes": 2147483648},
+      "desktop": {"ok": true, "round_trip_ms": 12.0},
+      "owned_tree": {"requested": false, "ok": true, "processes": []}
+    },
+    "expected_stop_reason": null
+  },
+  {
+    "name": "first_warning_stops",
+    "elapsed_seconds": 1,
+    "heartbeat_delay_seconds": 0.01,
+    "baseline_owned_bytes": null,
+    "require_owned_tree": false,
+    "sample": {
+      "pressure": {"ok": true, "raw": 2},
+      "headroom": {"ok": true, "consistent": true, "independently_validated": true, "floor_bytes": 3221225472},
+      "swap": {"ok": true, "used_bytes": 2147483648},
+      "desktop": {"ok": true, "round_trip_ms": 12.0},
+      "owned_tree": {"requested": false, "ok": true, "processes": []}
+    },
+    "expected_stop_reason": "memory_pressure_warning"
+  },
+  {
+    "name": "unknown_pressure_stops",
+    "elapsed_seconds": 1,
+    "heartbeat_delay_seconds": 0.01,
+    "baseline_owned_bytes": null,
+    "require_owned_tree": false,
+    "sample": {
+      "pressure": {"ok": false, "raw": 0},
+      "headroom": {"ok": true, "consistent": true, "independently_validated": true, "floor_bytes": 3221225472},
+      "swap": {"ok": true, "used_bytes": 2147483648},
+      "desktop": {"ok": true, "round_trip_ms": 12.0},
+      "owned_tree": {"requested": false, "ok": true, "processes": []}
+    },
+    "expected_stop_reason": "safety_signal_loss"
+  },
+  {
+    "name": "headroom_under_two_gib_stops",
+    "elapsed_seconds": 1,
+    "heartbeat_delay_seconds": 0.01,
+    "baseline_owned_bytes": null,
+    "require_owned_tree": false,
+    "sample": {
+      "pressure": {"ok": true, "raw": 1},
+      "headroom": {"ok": true, "consistent": true, "independently_validated": true, "floor_bytes": 2147483647},
+      "swap": {"ok": true, "used_bytes": 2147483648},
+      "desktop": {"ok": true, "round_trip_ms": 12.0},
+      "owned_tree": {"requested": false, "ok": true, "processes": []}
+    },
+    "expected_stop_reason": "headroom_below_2gib"
+  },
+  {
+    "name": "desktop_round_trip_over_two_seconds_stops",
+    "elapsed_seconds": 1,
+    "heartbeat_delay_seconds": 0.01,
+    "baseline_owned_bytes": null,
+    "require_owned_tree": false,
+    "sample": {
+      "pressure": {"ok": true, "raw": 1},
+      "headroom": {"ok": true, "consistent": true, "independently_validated": true, "floor_bytes": 3221225472},
+      "swap": {"ok": true, "used_bytes": 2147483648},
+      "desktop": {"ok": true, "round_trip_ms": 2000.001},
+      "owned_tree": {"requested": false, "ok": true, "processes": []}
+    },
+    "expected_stop_reason": "desktop_delay"
+  },
+  {
+    "name": "owned_increment_at_one_gib_stops",
+    "elapsed_seconds": 1,
+    "heartbeat_delay_seconds": 0.01,
+    "baseline_owned_bytes": 268435456,
+    "require_owned_tree": true,
+    "sample": {
+      "pressure": {"ok": true, "raw": 1},
+      "headroom": {"ok": true, "consistent": true, "independently_validated": true, "floor_bytes": 3221225472},
+      "swap": {"ok": true, "used_bytes": 2147483648},
+      "desktop": {"ok": true, "round_trip_ms": 12.0},
+      "owned_tree": {
+        "requested": true,
+        "ok": true,
+        "processes": [
+          {"pid": 700, "uid": 501, "start_abstime": 1000, "start_unix_us": 2000, "phys_footprint_bytes": 1342177280, "rusage_ok": true}
+        ]
+      }
+    },
+    "expected_stop_reason": "owned_increment_1gib"
+  }
+]

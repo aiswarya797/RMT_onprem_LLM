@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/bundle/v1/manifest.schema.json",
+  "title": "LLM Monitor diagnostic bundle manifest v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["bundle_version", "export_id", "deployment_id", "deployment_generation", "created_ms", "snapshot_id", "snapshot_revision", "registry_revision", "timezone", "clock_semantics", "redaction", "execution_status", "entries", "payload_uncompressed_bytes", "manifest_size_bytes", "total_archive_decoded_bytes"],
+  "properties": {
+    "bundle_version": {"const": "llm-monitor-bundle/1.0"},
+    "export_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "deployment_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "deployment_generation": {"$ref": "../../collector/v1/common.schema.json#/$defs/epoch"},
+    "created_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+    "snapshot_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "snapshot_revision": {"type": "integer", "minimum": 1, "maximum": 1000000},
+    "registry_revision": {"const": "mac-ollama-1"},
+    "timezone": {"type": "string", "minLength": 1, "maxLength": 64},
+    "clock_semantics": {"enum": ["single_host_monotonic_aligned", "cross_host_aligned", "alignment_unavailable"]},
+    "redaction": {"type": "object", "additionalProperties": false, "required": ["default_aliases", "model_digest_retained", "original_infrastructure_names"], "properties": {"default_aliases": {"const": true}, "model_digest_retained": {"type": "boolean"}, "original_infrastructure_names": {"const": false}}},
+    "execution_status": {"enum": ["synthetic_fixture", "observation_only", "executed_capture"]},
+    "entries": {
+      "type": "array", "minItems": 6, "maxItems": 999,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["path", "media_type", "schema_id", "size_bytes", "sha256", "provenance", "validation"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1, "maxLength": 240, "pattern": "^(README\\.html|incident\\.json|inventory\\.json|configuration\\.json|series\\.ndjson|coverage\\.json|comparison\\.json|probe\\.json|attachments/[0-9a-f-]{36}/[A-Za-z0-9._-]{1,128})$"},
+          "media_type": {"enum": ["application/json", "application/x-ndjson", "text/html", "application/octet-stream"]},
+          "schema_id": {"anyOf": [{"type": "string", "format": "uri", "maxLength": 256}, {"type": "null"}]},
+          "size_bytes": {"type": "integer", "minimum": 0, "maximum": 104857600},
+          "sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"},
+          "provenance": {"enum": ["generated_structured", "generated_static_html", "operator_approved_unverified_attachment"]},
+          "validation": {"enum": ["schema_validated", "script_free_html", "opaque_unverified"]}
+        }
+      }
+    },
+    "payload_uncompressed_bytes": {"type": "integer", "minimum": 0, "maximum": 104857600},
+    "manifest_size_bytes": {"type": "integer", "minimum": 1, "maximum": 1048576},
+    "total_archive_decoded_bytes": {"type": "integer", "minimum": 1, "maximum": 104857600}
+  }
+}

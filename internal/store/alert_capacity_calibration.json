@@ -1,0 +1,57 @@
+{
+  "schema_revision": "alert-capacity-calibration-1",
+  "witness_measurement_status": "measured_pending_independent_review",
+  "sqlite_version": "3.53.4",
+  "sqlite_source_id": "2026-07-24 19:02:57 bf7c7f30031888f4e796e429ab3978879485813aaca6f641c7b33e4e09459bcc",
+  "page_size": 4096,
+  "evidence": {
+    "supervised_run": "1789523855645535000-tests.log",
+    "snapshot_supervised_run": "1789526493291865000-tests.log",
+    "pressure_state": "normal",
+    "exact_capsule_payload_bytes": 65536,
+    "exact_notification_payload_bytes": 65536,
+    "destination_count": 16
+  },
+  "envelopes": {
+    "snapshot_cursor": {
+      "calibration_state": "measured_single_transaction_peak",
+      "population": 65,
+      "incident_delta_bytes": 0,
+      "metadata_delta_bytes": 24576,
+      "file_delta_bytes": 24576,
+      "incident_reservation_bytes": 4096,
+      "metadata_reservation_bytes": 24576,
+      "live_reservation_bytes": 28672
+    },
+    "transition": {
+      "calibration_state": "measured_plus_snapshot_cursor_peak",
+      "population": 1000,
+      "incident_delta_bytes": 274432,
+      "metadata_delta_bytes": 0,
+      "file_delta_bytes": 274432,
+      "incident_reservation_bytes": 4096,
+      "metadata_reservation_bytes": 24576,
+      "live_reservation_bytes": 28672
+    },
+    "firing_16_destinations": {
+      "calibration_state": "measured_plus_snapshot_cursor_peak",
+      "population": 256,
+      "incident_delta_bytes": 17268736,
+      "metadata_delta_bytes": 272011264,
+      "file_delta_bytes": 301694976,
+      "incident_reservation_bytes": 69632,
+      "metadata_reservation_bytes": 1089536,
+      "live_reservation_bytes": 1204224
+    },
+    "resolution_16_destinations": {
+      "calibration_state": "measured_plus_snapshot_cursor_peak",
+      "population": 256,
+      "incident_delta_bytes": 81920,
+      "metadata_delta_bytes": 271970304,
+      "file_delta_bytes": 268435456,
+      "incident_reservation_bytes": 4096,
+      "metadata_reservation_bytes": 1089536,
+      "live_reservation_bytes": 1093632
+    }
+  }
+}

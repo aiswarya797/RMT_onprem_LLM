@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/collector/v1/inventory.schema.json",
+  "title": "Collector inventory registration v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["protocol", "deployment_id", "host_id", "security_generation", "session_generation", "collector_boot_id", "inventory_revision", "sources", "targets", "models"],
+  "properties": {
+    "protocol": {"const": "1.0"},
+    "deployment_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "host_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "security_generation": {"$ref": "common.schema.json#/$defs/epoch"},
+    "session_generation": {"$ref": "common.schema.json#/$defs/positiveUint53"},
+    "collector_boot_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "inventory_revision": {"$ref": "common.schema.json#/$defs/sha256"},
+    "sources": {
+      "type": "array", "minItems": 1, "maxItems": 8,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["source_id", "kind", "target_id", "capability_revision", "active"],
+        "properties": {
+          "source_id": {"$ref": "common.schema.json#/$defs/uuid"},
+          "kind": {"enum": ["host", "runtime", "observed_request"]},
+          "target_id": {"anyOf": [{"$ref": "common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+          "capability_revision": {"const": "mac-ollama-1"},
+          "active": {"type": "boolean"}
+        }
+      }
+    },
+    "targets": {
+      "type": "array", "maxItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["target_id", "adapter_id", "local_selector_sha256", "association_state"],
+        "properties": {
+          "target_id": {"$ref": "common.schema.json#/$defs/uuid"},
+          "adapter_id": {"const": "ollama"},
+          "local_selector_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+          "association_state": {"enum": ["verified", "declared_unverified", "ambiguous"]}
+        }
+      }
+    },
+    "models": {
+      "type": "array", "maxItems": 64,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["model_id", "target_id", "alias", "digest", "reported_loaded"],
+        "properties": {
+          "model_id": {"$ref": "common.schema.json#/$defs/uuid"},
+          "target_id": {"$ref": "common.schema.json#/$defs/uuid"},
+          "alias": {"$ref": "common.schema.json#/$defs/safeString"},
+          "digest": {"anyOf": [{"$ref": "common.schema.json#/$defs/sha256"}, {"type": "null"}]},
+          "reported_loaded": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

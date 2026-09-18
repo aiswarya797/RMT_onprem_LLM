@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+  <title>Install LLM Monitor</title>
+  <style>body{font:16px system-ui,-apple-system,sans-serif;line-height:1.55;max-width:760px;margin:3rem auto;padding:0 1rem;color:#17211d}code,pre{background:#f1f3f1}pre{padding:1rem;overflow:auto}a{color:#075e42}h1,h2{line-height:1.2}</style>
+</head>
+<body>
+<p><strong>Same-machine developer preview:</strong> use the local installation role. Remote collection, inference probes, request comparisons and external notifications are experimental and disabled by default. Existing data is preserved. This unsigned build is not a notarized customer release.</p>
+  <nav aria-label="Offline guides"><a href="install.html">Install</a> · <a href="operate.html">Operate</a> · <a href="recover.html">Recover</a></nav>
+  <main>
+    <h1>Install LLM Monitor</h1>
+    <p>LLM Monitor is a read-only monitor for native Ollama on Apple Silicon Macs. The supported runtime boundary is macOS 14 or newer, subject to qualification for the exact Mac, macOS and Ollama combination. The current compatibility manifest is unverified and there is no customer release yet.</p>
+    <h2>One command per role</h2>
+    <p>Keep the generated helper beside the matching package and checksum list. For a qualified release, keep its detached checksum signature, public key and verifier beside them. Run exactly one role command from that folder:</p>
+    <pre><code>./llm-monitor-install.sh local
+./llm-monitor-install.sh master
+./llm-monitor-install.sh collector --hub-url "https://MASTER-IP:PORT" --pairing-code "PAIRING-CODE"</code></pre>
+    <p><code>local</code> installs the dashboard, storage and collector together. <code>master</code> installs dashboard and storage with a reviewed private listener for another Mac. <code>collector</code> is the generated command for that other Mac. The helper verifies the package, checks compatibility, installs for the current user, starts the supported user service and opens the dashboard where applicable. No Go, Node, source checkout, manual checksum, configuration, certificate file or token-file path is needed.</p>
+    <p>A development helper is explicitly unqualified and must not be called a customer release. A qualified release requires the publisher's signing, notarization and independently published trust values.</p>
+    <h2>First administrator</h2>
+    <p>For <code>local</code> or <code>master</code>, open <code>http://127.0.0.1:9443</code> if the helper could not open it. The browser obtains the one-use setup handoff from the loopback hub automatically. Choose the administrator username and password. They remain in memory for this attempt and are not put in the URL or browser storage.</p>
+    <p>If the handoff expires before an administrator exists, run this local command and return to the browser:</p>
+    <pre><code>"$HOME/Library/Application Support/LLM Monitor/bin/llm-monitor" admin bootstrap-renew</code></pre>
+    <p>The secret is never printed. Choose <strong>Check again</strong> in the browser.</p>
+    <h2>Connect another Mac</h2>
+    <p>On a master, sign in and choose <strong>Connect another Mac</strong>. The dashboard generates one complete collector command and shows Waiting, Connected, Expired or Failed. The one-use reservation expires after ten minutes. The collector obtains and pins the hub CA in its private application directory, then uses the existing mTLS enrollment. No macOS trust store or remote command is involved.</p>
+    <p>On the collector Mac, paste the generated command into Terminal. The collector checks the local read-only Ollama endpoint at <code>127.0.0.1:11434</code>; target authority stays on the collector Mac.</p>
+    <h2>Check, stop and remove</h2>
+    <pre><code>LLM_MONITOR="$HOME/Library/Application Support/LLM Monitor/bin/llm-monitor"
+"$LLM_MONITOR" status
+"$LLM_MONITOR" stop
+"$LLM_MONITOR" uninstall --keep-data --preview
+"$LLM_MONITOR" uninstall --keep-data --deployment-generation "GENERATION-UUID"</code></pre>
+    <p><code>stop</code> is repeatable and unloads only LLM Monitor's own user services. Re-running setup preserves data and pairing. Purge requires the current deployment ID and generation and removes only the paths shown by its preview. Ollama, its models, Homebrew and unrelated software are never removed.</p>
+    <h2>Audit a qualified release</h2>
+    <p>Ordinary users use the helper. A publisher or auditor can run the existing verifier with the package, checksum list, detached signature, public key, independently published public-key fingerprint and exact Developer ID Installer identity:</p>
+    <pre><code>./packaging/macos/verify-release.sh \
+  "./LLM-Monitor-0.1.0.pkg" \
+  "./LLM-Monitor-0.1.0-SHA256SUMS" \
+  "./LLM-Monitor-0.1.0-SHA256SUMS.sig" \
+  "./LLM-Monitor-0.1.0-SHA256SUMS.pub.pem" \
+  "PUBLISHED-PUBLIC-KEY-SHA256" \
+  "Developer ID Installer: Example Corp (TEAMID)"</code></pre>
+  </main>
+</body>
+</html>

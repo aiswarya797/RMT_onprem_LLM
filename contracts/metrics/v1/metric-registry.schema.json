@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/metrics/v1/metric-registry.schema.json",
+  "title": "Finite metric registry v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "registry_revision", "certification_state", "source_pins", "metrics", "unavailable_capabilities"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "registry_revision": {"const": "mac-ollama-1"},
+    "certification_state": {"const": "unverified"},
+    "source_pins": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "#/$defs/sourcePin"}},
+    "metrics": {"type": "array", "minItems": 22, "maxItems": 22, "items": {"$ref": "#/$defs/metric"}},
+    "unavailable_capabilities": {"type": "array", "minItems": 9, "maxItems": 9, "items": {"$ref": "#/$defs/unavailable"}}
+  },
+  "$defs": {
+    "metric": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "unit", "kind", "value_contract", "population", "source_method", "method_revision", "source_pin_id", "support", "quality", "zero_meaning", "missing_semantics", "aggregation", "labels", "certification_gate"],
+      "properties": {
+        "id": {"$ref": "../../collector/v1/common.schema.json#/$defs/metricId"},
+        "unit": {"enum": ["ratio", "state", "bytes", "boolean", "milliseconds", "tokens"]},
+        "kind": {"enum": ["gauge", "cumulative_counter", "request_sample"]},
+        "value_contract": {
+          "type": "object", "additionalProperties": false,
+          "required": ["type", "minimum", "maximum", "enum", "wire_encoding"],
+          "properties": {
+            "type": {"enum": ["number", "uint64", "boolean", "enum"]},
+            "minimum": {"anyOf": [{"type": "number"}, {"type": "null"}]},
+            "maximum": {"anyOf": [{"type": "number"}, {"type": "null"}]},
+            "enum": {"anyOf": [{"type": "array", "minItems": 1, "maxItems": 8, "items": {"type": "string", "maxLength": 32}}, {"type": "null"}]},
+            "wire_encoding": {"enum": ["json_number", "decimal_string", "json_boolean", "json_string"]}
+          }
+        },
+        "population": {"type": "string", "minLength": 1, "maxLength": 256},
+        "source_method": {"type": "string", "minLength": 1, "maxLength": 256},
+        "method_revision": {"type": "string", "minLength": 1, "maxLength": 128},
+        "source_pin_id": {"anyOf": [{"enum": ["ollama-0.34.0-source", "xnu-11417.121.6-source"]}, {"type": "null"}]},
+        "support": {"const": "unverified"},
+        "quality": {"enum": ["measured", "runtime_reported"]},
+        "zero_meaning": {"type": "string", "minLength": 1, "maxLength": 160},
+        "missing_semantics": {"const": "omit_or_null_with_reason_never_zero_fill"},
+        "aggregation": {"type": "string", "minLength": 1, "maxLength": 256},
+        "labels": {
+          "type": "object", "additionalProperties": false,
+          "required": ["required", "optional"],
+          "properties": {
+            "required": {"type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true, "items": {"$ref": "../../collector/v1/common.schema.json#/$defs/safeString"}},
+            "optional": {"type": "array", "maxItems": 8, "uniqueItems": true, "items": {"$ref": "../../collector/v1/common.schema.json#/$defs/safeString"}}
+          }
+        },
+        "certification_gate": {"enum": ["exact_os_build_rmt_capture_t16_t24", "exact_ollama_0_34_0_runtime_capture_t24", "t12_then_exact_client_runtime_capture_t24"]}
+      }
+    },
+    "sourcePin": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "role", "version", "commit", "execution", "compatibility", "files"],
+      "properties": {
+        "id": {"enum": ["ollama-0.34.0-source", "ollama-0.12.10-source", "xnu-11417.121.6-source"]},
+        "role": {"enum": ["primary_current_semantic_source", "historical_observed_version_semantic_source", "darwin_pressure_semantic_source"]},
+        "version": {"type": "string", "minLength": 1, "maxLength": 32},
+        "commit": {"type": "string", "pattern": "^[0-9a-f]{7,40}$"},
+        "execution": {"enum": ["source_inspection_only", "source_inspection_plus_observation_helper"]},
+        "compatibility": {"enum": ["unverified_until_runtime_capture", "unverified_observed_installation", "unverified_until_rmt_t16_t24"]},
+        "files": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"], "properties": {"path": {"type": "string", "minLength": 1, "maxLength": 128}, "sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}}}}
+      }
+    },
+    "unavailable": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "support", "reason", "numeric_value"],
+      "properties": {
+        "id": {"$ref": "../../collector/v1/common.schema.json#/$defs/metricId"},
+        "support": {"const": "unavailable"},
+        "reason": {"const": "unsupported_platform_contract"},
+        "numeric_value": {"const": null}
+      }
+    }
+  }
+}

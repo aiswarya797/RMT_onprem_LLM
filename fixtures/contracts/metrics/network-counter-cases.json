@@ -1,0 +1,38 @@
+{
+  "schema_version": "rmt-contract-fixture/1",
+  "fixture_id": "network-uint64-cases",
+  "synthetic": true,
+  "provenance": {
+    "registry_revision": "mac-ollama-1",
+    "wire_shape": "network_observations",
+    "source_method": "NET_RT_IFLIST2 if_msghdr2.ifm_data64",
+    "runtime_capture": false
+  },
+  "valid_decimal_values": [
+    "0",
+    "9007199254740993",
+    "18446744073709551615"
+  ],
+  "invalid_values": [
+    "01",
+    "-1",
+    "18446744073709551616",
+    9007199254740993
+  ],
+  "valid_network_observation": {
+    "interface_id": "4444444444444444444444444444444444444444444444444444444444444444",
+    "boot_id": "00000000-0000-4000-8000-000000000009",
+    "counter_epoch_id": "00000000-0000-4000-8000-000000000010",
+    "loopback": false,
+    "received_bytes_total": "9007199254740993",
+    "sent_bytes_total": "18446744073709551615",
+    "missing": [],
+    "provenance": {
+      "source": "darwin_api",
+      "method_revision": "darwin-net-rt-iflist2-ifdata64-candidate-1",
+      "verification": "synthetic_fixture",
+      "observed_at_ms": 1789473600000,
+      "source_artifact_sha256": null
+    }
+  }
+}

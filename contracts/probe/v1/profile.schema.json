@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/probe/v1/profile.schema.json",
+  "title": "Public content-free probe profile reference v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "profile_id", "profile_sha256", "prompt_sha256", "prompt_content_class", "options", "content_persistence"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "profile_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"},
+    "profile_sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"},
+    "prompt_sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"},
+    "prompt_content_class": {"const": "public_synthetic"},
+    "options": {"$ref": "../../collector/v1/common.schema.json#/$defs/generationOptions"},
+    "content_persistence": {"const": "none"}
+  }
+}

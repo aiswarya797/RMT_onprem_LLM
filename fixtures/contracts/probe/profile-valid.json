@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "profile_id": "short_text_v1",
+  "profile_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+  "prompt_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+  "prompt_content_class": "public_synthetic",
+  "options": {
+    "num_ctx": 1024,
+    "num_predict": 64,
+    "temperature": 0.0,
+    "seed": 7,
+    "think": false,
+    "stream": true,
+    "cold_warm_policy": "warm_model_reported_loaded"
+  },
+  "content_persistence": "none"
+}

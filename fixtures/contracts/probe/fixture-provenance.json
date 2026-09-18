@@ -1,0 +1,42 @@
+{
+  "schema_version": "rmt-contract-fixture-provenance/1",
+  "fixture_set": "u01-probe-contracts",
+  "source": "contract_fixture",
+  "files": [
+    {
+      "path": "fixtures/contracts/probe/profile-valid.json",
+      "sha256": "6a630a9092abdd1fecb1e56de34968c2f13606c3209f6ff9253def07ded97672",
+      "synthetic": true,
+      "runtime_capture": false
+    },
+    {
+      "path": "fixtures/contracts/probe/request-sample-valid.json",
+      "sha256": "e0d446602d721b2914c1e3f4a07ff3fe05f88d499f13876d34f4d80b767f212d",
+      "synthetic": true,
+      "runtime_capture": false
+    },
+    {
+      "path": "fixtures/contracts/probe/request-run-valid.json",
+      "sha256": "0eca9a678ee8d2574b0e7aa15a51487a3a15963b07a92e00c57971fd46b8febc",
+      "synthetic": true,
+      "runtime_capture": false
+    },
+    {
+      "path": "fixtures/contracts/probe/ollama-ndjson-cases.json",
+      "sha256": "2ff2f411259cf4d64ac97b5cf251995c5614b3324e45c98b347a7a4f8325ea05",
+      "synthetic": true,
+      "runtime_capture": false
+    },
+    {
+      "path": "fixtures/contracts/probe/normalized-negative-cases.json",
+      "sha256": "872e3bdbfdaa94d982d7b510e6b13f5d64123f3334c7bc750f869dea703bc51a",
+      "synthetic": true,
+      "runtime_capture": false
+    }
+  ],
+  "limits": [
+    "Synthetic parser canaries are not runtime capture.",
+    "No fixture certifies Ollama, model execution, hardware, or RMT.",
+    "Synthetic response/thinking/context values exist only in raw parser canaries and must be discarded before normalized samples."
+  ]
+}

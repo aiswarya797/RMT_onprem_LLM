@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/api/v1/incident-response.schema.json",
+  "title": "Saved investigation and alert incident responses v1",
+  "$defs": {
+    "responseScope": {"anyOf": [{"$ref": "#/$defs/scope"}, {"type": "object", "additionalProperties": false, "required": ["kind", "id"], "properties": {"kind": {"const": "deployment"}, "id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}}}]},
+    "alertState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["incident_id", "instance_id", "rule_id", "rule_version", "condition", "data_state", "acknowledged_by", "acknowledged_ms", "muted_until_ms", "transition_seq", "active_generation", "delivery", "deliveries"],
+      "properties": {
+        "incident_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+        "instance_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+        "rule_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+        "rule_version": {"type": "integer", "minimum": 1},
+        "condition": {"enum": ["OK", "PENDING", "FIRING", "RECOVERING", "RESOLVED", "superseded"]},
+        "data_state": {"enum": ["valid", "unknown", "stale", "incompatible"]},
+        "acknowledged_by": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+        "acknowledged_ms": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, {"type": "null"}]},
+        "muted_until_ms": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, {"type": "null"}]},
+        "transition_seq": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "active_generation": {"type": "integer", "minimum": 1},
+        "delivery": {"type": "object", "additionalProperties": false, "required": ["total", "pending", "leased", "sent", "failed", "expired", "superseded_before_delivery", "muted"], "properties": {"total": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, "pending": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, "leased": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, "sent": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, "failed": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, "expired": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, "superseded_before_delivery": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, "muted": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}}},
+        "deliveries": {"type": "array", "maxItems": 100, "items": {"$ref": "response.schema.json#/$defs/delivery"}}
+      }
+    },
+    "alertControl": {"type": "object", "additionalProperties": false, "required": ["alert_state", "notification_may_be_in_flight"], "properties": {"alert_state": {"$ref": "#/$defs/alertState"}, "notification_may_be_in_flight": {"type": "boolean"}}},
+    "scope": {"$ref": "incident-request.schema.json#/$defs/scope"},
+    "window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start_ms", "end_ms"],
+      "properties": {
+        "start_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "end_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}
+      }
+    },
+    "gap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start_ms", "end_ms", "reason"],
+      "properties": {
+        "start_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "end_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "reason": {"$ref": "../../collector/v1/common.schema.json#/$defs/missingReason"}
+      }
+    },
+    "cardInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "value", "unit", "observed_ms", "quality", "missing_reason", "provenance"],
+      "properties": {
+        "name": {"$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"},
+        "value": {"anyOf": [{"type": "number"}, {"type": "boolean"}, {"type": "string", "maxLength": 128}, {"type": "null"}]},
+        "unit": {"type": "string", "minLength": 1, "maxLength": 32},
+        "observed_ms": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, {"type": "null"}]},
+        "quality": {"$ref": "../../collector/v1/common.schema.json#/$defs/quality"},
+        "missing_reason": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/missingReason"}, {"type": "null"}]},
+        "provenance": {"$ref": "../../collector/v1/common.schema.json#/$defs/provenance"}
+      }
+    },
+    "evidenceCard": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["card_id", "priority", "copy_template_id", "scope", "title", "summary", "eligibility", "reason_codes", "requested_window", "effective_window", "coverage_ratio", "source_ids", "definition_revisions", "config_ids", "inputs", "gaps", "referenced_event_ids", "source_links", "next_check_code", "next_check_label"],
+      "properties": {
+        "card_id": {"enum": ["EC01", "EC02", "EC03", "EC04", "EC05", "EC06", "EC07"]},
+        "priority": {"type": "integer", "minimum": 1, "maximum": 7},
+        "copy_template_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"},
+        "scope": {"$ref": "#/$defs/scope"},
+        "title": {"type": "string", "minLength": 1, "maxLength": 160},
+        "summary": {"type": "string", "minLength": 1, "maxLength": 512},
+        "eligibility": {"enum": ["eligible", "insufficient", "not_observed"]},
+        "reason_codes": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"}},
+        "requested_window": {"$ref": "#/$defs/window"},
+        "effective_window": {"anyOf": [{"$ref": "#/$defs/window"}, {"type": "null"}]},
+        "coverage_ratio": {"anyOf": [{"type": "number", "minimum": 0, "maximum": 1}, {"type": "null"}]},
+        "source_ids": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}},
+        "definition_revisions": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"$ref": "../../collector/v1/common.schema.json#/$defs/safeString"}},
+        "config_ids": {"type": "array", "maxItems": 16, "uniqueItems": true, "items": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}},
+        "inputs": {"type": "array", "maxItems": 32, "items": {"$ref": "#/$defs/cardInput"}},
+        "gaps": {"type": "array", "maxItems": 32, "items": {"$ref": "#/$defs/gap"}},
+        "referenced_event_ids": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}},
+        "source_links": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["scope_id", "metric", "start_ms", "end_ms"],
+            "properties": {
+              "scope_id": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}, {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}]},
+              "metric": {"$ref": "../../collector/v1/common.schema.json#/$defs/metricId"},
+              "start_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+              "end_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}
+            }
+          }
+        },
+        "next_check_code": {"$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"},
+        "next_check_label": {"type": "string", "minLength": 1, "maxLength": 256}
+      }
+    },
+    "capsule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_revision", "catalogue_revision", "generated_ms", "scope", "focus_window", "baseline_window", "evidence_state", "cards", "collapsed_card_count"],
+      "properties": {
+        "schema_revision": {"const": "incident-capsule-1"},
+        "catalogue_revision": {"const": "ec01-ec07-mac-1"},
+        "generated_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "scope": {"$ref": "#/$defs/scope"},
+        "focus_window": {"$ref": "#/$defs/window"},
+        "baseline_window": {"$ref": "#/$defs/window"},
+        "evidence_state": {"enum": ["complete", "partial"]},
+        "cards": {"type": "array", "maxItems": 14, "items": {"$ref": "#/$defs/evidenceCard"}},
+        "collapsed_card_count": {"type": "integer", "minimum": 0, "maximum": 1000}
+      }
+    },
+    "annotation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "revision", "incident_id", "declared_time_ms", "text", "author_user_id", "edited_ms", "created_ms", "provenance"],
+      "properties": {
+        "id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+        "revision": {"type": "integer", "minimum": 1},
+        "incident_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+        "declared_time_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "text": {"type": "string", "minLength": 1, "maxLength": 2048},
+        "author_user_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+        "edited_ms": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, {"type": "null"}]},
+        "created_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "provenance": {"const": "operator_declared"}
+      }
+    },
+    "comparisonReference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["comparison_id", "metric_id", "status", "before_run_id", "after_run_id", "created_ms", "expires_ms"],
+      "properties": {
+        "comparison_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+        "metric_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/metricId"},
+        "status": {"enum": ["insufficient_evidence", "observed_change_with_confounds", "observed_change_similar_recorded_conditions", "no_clear_observed_change", "expired"]},
+        "before_run_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+        "after_run_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+        "created_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "expires_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}
+      }
+    },
+    "incidentSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "id", "revision", "title", "origin", "scope", "start_ms", "end_ms", "workflow_state", "owner_user_id", "evidence_status", "capsule_sha256", "created_ms", "updated_ms"],
+      "allOf": [{"if": {"properties": {"origin": {"const": "manual"}}}, "then": {"properties": {"scope": {"$ref": "#/$defs/scope"}, "end_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}}}}, {"if": {"properties": {"origin": {"const": "alert"}}}, "then": {"required": ["alert_state"]}, "else": {"not": {"required": ["alert_state"]}}}],
+      "properties": {
+        "alert_state": {"$ref": "#/$defs/alertState"},
+        "schema_version": {"const": "1.0"},
+        "id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+        "revision": {"type": "integer", "minimum": 1},
+        "title": {"type": "string", "minLength": 1, "maxLength": 160},
+        "origin": {"enum": ["manual", "alert"]},
+        "scope": {"$ref": "#/$defs/responseScope"},
+        "start_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "end_ms": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, {"type": "null"}]},
+        "workflow_state": {"enum": ["open", "closed"]},
+        "owner_user_id": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+        "evidence_status": {"enum": ["available", "partial", "expired"]},
+        "capsule_sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"},
+        "created_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "updated_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}
+      }
+    },
+    "incidentDetail": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "id", "revision", "title", "origin", "scope", "start_ms", "end_ms", "workflow_state", "owner_user_id", "evidence_status", "capsule_sha256", "created_ms", "updated_ms", "capsule", "annotations", "annotations_next_cursor", "comparisons"],
+      "allOf": [{"if": {"properties": {"origin": {"const": "manual"}}}, "then": {"properties": {"scope": {"$ref": "#/$defs/scope"}, "end_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, "capsule": {"anyOf": [{"$ref": "#/$defs/capsule"}, {"type": "null"}]}}}}, {"if": {"properties": {"origin": {"const": "alert"}}}, "then": {"properties": {"capsule": {"anyOf": [{"$ref": "alert-capsule.schema.json"}, {"type": "null"}]}}}}, {"if": {"properties": {"origin": {"const": "alert"}}}, "then": {"required": ["alert_state"]}, "else": {"not": {"required": ["alert_state"]}}}],
+      "properties": {
+        "alert_state": {"$ref": "#/$defs/alertState"},
+        "schema_version": {"const": "1.0"},
+        "id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+        "revision": {"type": "integer", "minimum": 1},
+        "title": {"type": "string", "minLength": 1, "maxLength": 160},
+        "origin": {"enum": ["manual", "alert"]},
+        "scope": {"$ref": "#/$defs/responseScope"},
+        "start_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "end_ms": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, {"type": "null"}]},
+        "workflow_state": {"enum": ["open", "closed"]},
+        "owner_user_id": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+        "evidence_status": {"enum": ["available", "partial", "expired"]},
+        "capsule_sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"},
+        "created_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "updated_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "capsule": {"anyOf": [{"$ref": "#/$defs/capsule"}, {"$ref": "alert-capsule.schema.json"}, {"type": "null"}]},
+        "annotations": {"type": "array", "maxItems": 100, "items": {"$ref": "#/$defs/annotation"}},
+        "annotations_next_cursor": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+        "comparisons": {"type": "array", "maxItems": 256, "items": {"$ref": "#/$defs/comparisonReference"}}
+      }
+    },
+    "incidentList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["items", "next_cursor"],
+      "properties": {
+        "items": {"type": "array", "maxItems": 100, "items": {"$ref": "#/$defs/incidentSummary"}},
+        "next_cursor": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}, {"type": "null"}]}
+      }
+    },
+    "annotationList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["items", "next_cursor"],
+      "properties": {
+        "items": {"type": "array", "maxItems": 100, "items": {"$ref": "#/$defs/annotation"}},
+        "next_cursor": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}, {"type": "null"}]}
+      }
+    }
+  }
+}

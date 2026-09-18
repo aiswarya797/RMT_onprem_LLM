@@ -1,0 +1,69 @@
+{
+  "schema_version": "rmt-feasibility-capture/1",
+  "scenario": "natural_desktop_observation_only",
+  "synthetic": false,
+  "capture_date": "2026-09-15",
+  "command": "python3 tests/feasibility/macos_safety_supervisor.py observe --probe tests/feasibility/.bin/macos_safety_probe --output .work/u01-safety/observation-20260915.jsonl",
+  "host": {
+    "chip": "Apple M1",
+    "model": "MacBookAir10,1",
+    "physical_memory_bytes": 8589934592,
+    "os": "macOS 15.5",
+    "build": "24F74"
+  },
+  "timing": {
+    "method": "elapsed monotonic, one sample per second",
+    "duration_seconds": 120.010033,
+    "sample_count": 120,
+    "file_created_at_utc": "2026-09-15T15:43:08.884658+00:00",
+    "utc_note": "Filesystem creation time is a capture anchor, not a per-sample independently synchronized clock."
+  },
+  "source_hashes": {
+    "tests/feasibility/macos_safety_probe.c": "c1fcb04f696d9429b67e883d3dfa460f7a858b11764604cd8edeace6aa8b3bd7",
+    "tests/feasibility/macos_safety_supervisor.py": "dd384fa4588c5b42eaa4e79e7b6f71a74b6fba3551c2e1a202a60a4171bc735f",
+    "tests/feasibility/.bin/macos_safety_probe": "bf00ac6274807af13dbbd34714eb9646b555fcaee4a0e8104b24a0f46760e19a"
+  },
+  "observations_sha256": "872ed3de85e0c0beb4586e1d35c86c59432d16bad5322e69768baa2813c777d4",
+  "result": {
+    "observation_complete": true,
+    "load_authorized": false,
+    "model_runtime_started": false,
+    "model_imported": false,
+    "inference_requests": 0,
+    "rmt_candidate_present": false
+  },
+  "summary": {
+    "pressure_states": [
+      "normal"
+    ],
+    "swap_used_bytes": 2899181568,
+    "swap_growth_max_bytes": 0,
+    "desktop_round_trip_ms": {
+      "min": 70.302,
+      "median": 73.712,
+      "max": 135.339
+    },
+    "heartbeat_delay_max_seconds": 0.010154,
+    "guarded_headroom_proxy_bytes": {
+      "min": 0,
+      "max": 0
+    },
+    "headroom_proxy_validation": "uncertified; insufficient for load authorization"
+  },
+  "expected_diagnostic_claims": {
+    "memory_pressure_high": false,
+    "memory_pressure_normal": true,
+    "model_fit": "not_tested_safety_preflight_limited",
+    "request_timing": "unavailable_no_observed_requests",
+    "rmt_correctness": "pending_candidate_test",
+    "rmt_overhead": "pending_candidate_test"
+  },
+  "limits": [
+    "No inference, active-pressure, relief or cancellation case ran.",
+    "WindowServer query latency is a limited desktop-response proxy.",
+    "Source helper is a test instrument; it is not a certified RMT collector.",
+    "Guarded proxy zero after reserve does not mean zero physical free memory.",
+    "No load generator, unrelated application termination or power setting change.",
+    "Existing desktop and Codex work retained; lightweight source downloads occurred during observation."
+  ]
+}

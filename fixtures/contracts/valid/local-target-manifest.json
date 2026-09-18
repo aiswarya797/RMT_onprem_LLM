@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "manifest_id": "00000000-0000-4000-8000-000000000010",
+  "manifest_revision": 1,
+  "adapter_id": "ollama",
+  "endpoint": {"scheme": "http", "loopback_host": "127.0.0.1", "port": 11435, "base_path": ""},
+  "identity_revision": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "display_name": "Isolated Ollama"
+}

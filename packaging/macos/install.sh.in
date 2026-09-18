@@ -1,0 +1,122 @@
+#!/bin/sh
+set -eu
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+MODE="@MODE@"
+VERSION="@VERSION@"
+PACKAGE_NAME="@PACKAGE_NAME@"
+SUMS_NAME="@SUMS_NAME@"
+SIGNATURE_NAME="@SIGNATURE_NAME@"
+PUBLIC_KEY_NAME="@PUBLIC_KEY_NAME@"
+EXPECTED_PUBLIC_KEY_SHA256="@EXPECTED_PUBLIC_KEY_SHA256@"
+EXPECTED_INSTALLER_IDENTITY="@EXPECTED_INSTALLER_IDENTITY@"
+
+fail() {
+  echo "LLM Monitor installer: $*" >&2
+  exit 1
+}
+
+usage() {
+  cat >&2 <<EOF
+Usage:
+  $0 local
+  $0 master
+  $0 collector --hub-url https://MASTER:PORT --pairing-code CODE
+
+Keep this helper beside the matching package and checksum files.
+EOF
+  exit 2
+}
+
+[ "$#" -ge 1 ] || usage
+ROLE=$1
+shift
+if [ "$ROLE" != local ] && [ "${LLM_MONITOR_EXPERIMENTAL:-0}" != 1 ]; then
+  fail "This preview supports local only. Remote roles are experimental; see docs/experimental.md."
+fi
+HUB_URL=
+PAIRING_CODE=
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --hub-url)
+      [ "$#" -ge 2 ] || fail "--hub-url needs the master's HTTPS endpoint"
+      HUB_URL=$2
+      shift 2
+      ;;
+    --pairing-code)
+      [ "$#" -ge 2 ] || fail "--pairing-code needs the one-use code from the master"
+      PAIRING_CODE=$2
+      shift 2
+      ;;
+    --help|-h)
+      usage
+      ;;
+    *)
+      fail "unknown option: $1"
+      ;;
+  esac
+done
+
+case "$ROLE" in
+  local|master)
+    [ -z "$HUB_URL" ] && [ -z "$PAIRING_CODE" ] || fail "$ROLE does not accept collector pairing options"
+    ;;
+  collector)
+    [ -n "$HUB_URL" ] || fail "collector setup needs --hub-url https://MASTER:PORT"
+    [ -n "$PAIRING_CODE" ] || fail "collector setup needs --pairing-code CODE"
+    ;;
+  *)
+    usage
+    ;;
+esac
+
+PACKAGE_PATH="$SCRIPT_DIR/$PACKAGE_NAME"
+SUMS_PATH="$SCRIPT_DIR/$SUMS_NAME"
+[ -f "$PACKAGE_PATH" ] || fail "matching package is missing: $PACKAGE_NAME"
+[ -f "$SUMS_PATH" ] || fail "matching checksum list is missing: $SUMS_NAME"
+command -v shasum >/dev/null 2>&1 || fail "shasum is required to verify the package"
+command -v awk >/dev/null 2>&1 || fail "awk is required to verify the package"
+
+EXPECTED_PACKAGE_SHA256=$(awk -v name="$PACKAGE_NAME" '$2 == name {print $1}' "$SUMS_PATH")
+[ "$(printf '%s\n' "$EXPECTED_PACKAGE_SHA256" | awk 'NF {count++} END {print count+0}')" = 1 ] || fail "checksum list does not contain exactly one entry for $PACKAGE_NAME"
+if [ "$(printf '%s\n' "$EXPECTED_PACKAGE_SHA256" | awk 'length($0)==64 && $0 !~ /[^0-9a-fA-F]/ {print "ok"}')" != ok ]; then
+  fail "checksum list contains an invalid package digest"
+fi
+ACTUAL_PACKAGE_SHA256=$(shasum -a 256 "$PACKAGE_PATH" | awk '{print $1}')
+[ "$ACTUAL_PACKAGE_SHA256" = "$EXPECTED_PACKAGE_SHA256" ] || fail "package verification failed; transfer the matching artifact set again"
+
+if [ "$MODE" = "release" ]; then
+  [ -x "$SCRIPT_DIR/verify-release.sh" ] || fail "release verifier is missing beside the installer helper"
+  [ -f "$SCRIPT_DIR/$SIGNATURE_NAME" ] || fail "release checksum signature is missing"
+  [ -f "$SCRIPT_DIR/$PUBLIC_KEY_NAME" ] || fail "release checksum public key is missing"
+  [ -n "$EXPECTED_PUBLIC_KEY_SHA256" ] || fail "release helper has no independently published checksum-key fingerprint"
+  [ -n "$EXPECTED_INSTALLER_IDENTITY" ] || fail "release helper has no independently published installer identity"
+  "$SCRIPT_DIR/verify-release.sh" \
+    "$PACKAGE_PATH" "$SUMS_PATH" "$SCRIPT_DIR/$SIGNATURE_NAME" \
+    "$SCRIPT_DIR/$PUBLIC_KEY_NAME" "$EXPECTED_PUBLIC_KEY_SHA256" "$EXPECTED_INSTALLER_IDENTITY" \
+    || fail "release artifact verification failed"
+else
+  echo "This is an unqualified development artifact (unsigned package); it is not a customer release."
+fi
+
+echo "Installing LLM Monitor $VERSION for the current user..."
+installer -pkg "$PACKAGE_PATH" -target CurrentUserHomeDirectory
+LLM_MONITOR="$HOME/Library/Application Support/LLM Monitor/bin/llm-monitor"
+[ -x "$LLM_MONITOR" ] || fail "installation completed without the LLM Monitor executable"
+
+echo "Checking this Mac for the $ROLE setup..."
+"$LLM_MONITOR" install check --role "$ROLE" || fail "this Mac did not pass the supported $ROLE compatibility checks"
+case "$ROLE" in
+  local|master)
+    "$LLM_MONITOR" setup "$ROLE"
+    DASHBOARD_URL="http://127.0.0.1:9443"
+    echo "Dashboard: $DASHBOARD_URL"
+    if command -v open >/dev/null 2>&1; then
+      open "$DASHBOARD_URL" >/dev/null 2>&1 || true
+    fi
+    ;;
+  collector)
+    "$LLM_MONITOR" setup collector --hub-url "$HUB_URL" --pairing-code "$PAIRING_CODE"
+    echo "Collector configured. Check its state with: $LLM_MONITOR status"
+    ;;
+esac

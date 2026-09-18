@@ -1,0 +1,443 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/api/v1/alert-capsule.schema.json",
+  "title": "Protected alert trigger evidence v1",
+  "$ref": "#/$defs/capsule",
+  "$defs": {
+    "sourceSample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "collector_boot_id",
+        "source_id",
+        "sequence",
+        "config_ids"
+      ],
+      "properties": {
+        "collector_boot_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "source_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "sequence": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "config_ids": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+              },
+              {
+                "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "gap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start_ms",
+        "end_ms",
+        "reason"
+      ],
+      "properties": {
+        "start_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "end_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "reason": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric_id",
+        "unit",
+        "window_start_ms",
+        "window_end_ms",
+        "observed_ms",
+        "quality",
+        "number_value",
+        "state_value",
+        "boolean_value",
+        "valid_n",
+        "completed_n",
+        "source_samples",
+        "source_sample_count",
+        "source_samples_truncated",
+        "definition_revision",
+        "method_revision",
+        "gaps",
+        "unavailable_reasons",
+        "request_sample_ids",
+        "request_sample_count",
+        "request_samples_truncated"
+      ],
+      "properties": {
+        "metric_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "unit": {
+          "enum": [
+            "ratio",
+            "state",
+            "boolean",
+            "milliseconds",
+            "bytes"
+          ]
+        },
+        "window_start_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "window_end_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "observed_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "quality": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/quality"
+        },
+        "number_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state_value": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "boolean_value": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "valid_n": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "completed_n": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_samples": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "$ref": "#/$defs/sourceSample"
+          }
+        },
+        "source_sample_count": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "source_samples_truncated": {
+          "type": "boolean"
+        },
+        "definition_revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "method_revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "gaps": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "$ref": "#/$defs/gap"
+          }
+        },
+        "unavailable_reasons": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"
+          }
+        },
+        "request_sample_ids": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+          }
+        },
+        "request_sample_count": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "request_samples_truncated": {
+          "type": "boolean"
+        },
+        "status_sample": {
+          "$ref": "#/$defs/statusSample"
+        },
+        "status_absence": {
+          "$ref": "#/$defs/statusAbsence"
+        }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "evaluator_type",
+        "scope_id",
+        "scope_fingerprint",
+        "incarnation_policy"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "evaluator_type": {
+          "enum": [
+            "ollama_unreachable",
+            "host_not_reporting",
+            "source_missing",
+            "memory_pressure",
+            "heavy_cpu",
+            "observed_request_duration",
+            "disk_monitor_health"
+          ]
+        },
+        "scope_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "scope_fingerprint": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+        },
+        "incarnation_policy": {
+          "enum": [
+            "stable_scope",
+            "target_reachability_episode",
+            "source_incarnation",
+            "request_population"
+          ]
+        }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event_ms",
+        "input_cursor_ordinal",
+        "input_sha256",
+        "previous_state",
+        "new_state",
+        "data_state",
+        "predicate",
+        "reason",
+        "observed_dwell_ms",
+        "evidence_sha256"
+      ],
+      "properties": {
+        "event_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "input_cursor_ordinal": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "input_sha256": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+        },
+        "previous_state": {
+          "enum": [
+            "OK",
+            "PENDING",
+            "FIRING",
+            "RECOVERING",
+            "RESOLVED",
+            "superseded"
+          ]
+        },
+        "new_state": {
+          "const": "FIRING"
+        },
+        "data_state": {
+          "enum": [
+            "valid",
+            "unknown",
+            "stale",
+            "incompatible"
+          ]
+        },
+        "predicate": {
+          "enum": [
+            "match",
+            "clear",
+            "hold"
+          ]
+        },
+        "reason": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"
+        },
+        "observed_dwell_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "evidence_sha256": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "capsule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_revision",
+        "card_revision",
+        "incident_id",
+        "instance_id",
+        "rule",
+        "evaluation",
+        "evidence"
+      ],
+      "properties": {
+        "schema_revision": {
+          "const": "alert-trigger-capsule-1"
+        },
+        "card_revision": {
+          "const": "ec01-ec07-mac-1"
+        },
+        "incident_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "instance_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "rule": {
+          "$ref": "#/$defs/rule"
+        },
+        "evaluation": {
+          "$ref": "#/$defs/evaluation"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        }
+      }
+    },
+    "statusSample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "host_id",
+        "collector_boot_id",
+        "session_generation",
+        "sequence",
+        "payload_sha256",
+        "observed_ms",
+        "admitted_ms"
+      ],
+      "properties": {
+        "host_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "collector_boot_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "session_generation": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "sequence": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "payload_sha256": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+        },
+        "observed_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "admitted_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        }
+      }
+    },
+    "statusAbsence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "host_id",
+        "collector_boot_id",
+        "session_generation",
+        "checked_ms"
+      ],
+      "properties": {
+        "host_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "collector_boot_id": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "session_generation": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "checked_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        }
+      }
+    }
+  }
+}

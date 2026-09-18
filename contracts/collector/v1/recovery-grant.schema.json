@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/collector/v1/recovery-grant.schema.json",
+  "title": "Collector recovery grant v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "grant_id", "deployment_id", "host_id", "current_security_generation", "original_security_generation", "original_collector_boot_id", "manifest_sha256", "approved_segments", "max_bytes", "max_frames", "issued_ms", "expires_ms", "grant_sha256"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "grant_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "deployment_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "host_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "current_security_generation": {"$ref": "common.schema.json#/$defs/epoch"},
+    "original_security_generation": {"$ref": "common.schema.json#/$defs/epoch"},
+    "original_collector_boot_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "manifest_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+    "approved_segments": {"type": "array", "minItems": 1, "maxItems": 4096, "items": {"type": "object", "additionalProperties": false, "required": ["source_id", "from_sequence", "to_sequence", "segment_sha256"], "properties": {"source_id": {"$ref": "common.schema.json#/$defs/uuid"}, "from_sequence": {"$ref": "common.schema.json#/$defs/uint53"}, "to_sequence": {"$ref": "common.schema.json#/$defs/uint53"}, "segment_sha256": {"$ref": "common.schema.json#/$defs/sha256"}}}},
+    "max_bytes": {"type": "integer", "minimum": 1, "maximum": 268435456},
+    "max_frames": {"type": "integer", "minimum": 1, "maximum": 1000000},
+    "issued_ms": {"$ref": "common.schema.json#/$defs/uint53"},
+    "expires_ms": {"$ref": "common.schema.json#/$defs/uint53"},
+    "grant_sha256": {"$ref": "common.schema.json#/$defs/sha256", "$comment": "SHA-256 of compact UTF-8 JSON in this schema's property order with grant_sha256 omitted entirely."}
+  }
+}

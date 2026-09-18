@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "incident_id": "30000000-0000-4000-8000-000000000001",
+  "snapshot_revision": 1,
+  "origin": "manual",
+  "workflow_state": "open",
+  "requested_window": {"start_ms": 1789473300000, "end_ms": 1789473600000},
+  "effective_window": {"start_ms": 1789473305000, "end_ms": 1789473600000},
+  "cards": [{"card_id": "EC07", "catalogue_revision": "1", "eligibility": "insufficient_evidence", "reason_codes": ["population_not_observed"], "input_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "source_ids": ["33333333-3333-4333-8333-333333333333"]}],
+  "annotations": [],
+  "alert_history": [],
+  "evidence_state": "partial"
+}

@@ -1,0 +1,315 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/api/v1/query.schema.json",
+  "title": "Bounded series query response v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "metric",
+    "definition_revision",
+    "unit",
+    "requested_range",
+    "effective_range",
+    "population",
+    "host_id",
+    "source_id",
+    "resolution_tier",
+    "method_revision",
+    "epoch_id",
+    "clock_method",
+    "coverage_ratio",
+    "population_key",
+    "completed_count",
+    "cancelled_count",
+    "failed_count",
+    "incomplete_count",
+    "summary",
+    "points",
+    "gaps",
+    "warnings"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "metric": {
+      "$ref": "../../collector/v1/common.schema.json#/$defs/metricId"
+    },
+    "definition_revision": {
+      "const": "mac-ollama-1"
+    },
+    "unit": {
+      "enum": [
+        "ratio",
+        "state",
+        "bytes",
+        "boolean",
+        "milliseconds",
+        "tokens"
+      ]
+    },
+    "requested_range": {
+      "$ref": "#/$defs/range"
+    },
+    "effective_range": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/range"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "population": {
+      "enum": [
+        "host",
+        "runtime",
+        "process",
+        "explicit_observed_request"
+      ]
+    },
+    "host_id": {
+      "anyOf": [
+        {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "population_key": {
+      "anyOf": [
+        {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/populationKey"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "completed_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "cancelled_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "failed_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "incomplete_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "summary": {
+      "anyOf": [
+        {
+          "$ref": "../../metrics/v1/request-summary.schema.json"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "points": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "time_ms",
+          "value",
+          "quality",
+          "missing_reason",
+          "epoch_id"
+        ],
+        "properties": {
+          "time_ms": {
+            "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "quality": {
+            "$ref": "../../collector/v1/common.schema.json#/$defs/quality"
+          },
+          "missing_reason": {
+            "anyOf": [
+              {
+                "$ref": "../../collector/v1/common.schema.json#/$defs/missingReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "epoch_id": {
+            "anyOf": [
+              {
+                "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "start_ms",
+          "end_ms",
+          "reason"
+        ],
+        "properties": {
+          "start_ms": {
+            "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+          },
+          "end_ms": {
+            "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+          },
+          "reason": {
+            "$ref": "../../collector/v1/common.schema.json#/$defs/missingReason"
+          }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "string",
+        "maxLength": 256
+      }
+    },
+    "source_id": {
+      "anyOf": [
+        {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "resolution_tier": {
+      "anyOf": [
+        {
+          "enum": [
+            "raw",
+            "minute",
+            "hour"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "method_revision": {
+      "anyOf": [
+        {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/safeString"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "epoch_id": {
+      "anyOf": [
+        {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "clock_method": {
+      "anyOf": [
+        {
+          "enum": [
+            "single_host_monotonic_aligned",
+            "cross_host_aligned",
+            "alignment_unavailable",
+            "monotonic"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "coverage_ratio": {
+      "anyOf": [
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "start_ms",
+        "end_ms",
+        "inclusive_start_exclusive_end"
+      ],
+      "properties": {
+        "start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "start_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "end_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "inclusive_start_exclusive_end": {
+          "const": true
+        }
+      }
+    }
+  }
+}

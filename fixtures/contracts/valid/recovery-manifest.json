@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "deployment_id": "00000000-0000-4000-8000-000000000001",
+  "host_id": "00000000-0000-4000-8000-000000000002",
+  "original_security_generation": "77777777-7777-4777-8777-777777777777",
+  "original_collector_boot_id": "11111111-1111-4111-8111-111111111111",
+  "created_ms": 1789473600010,
+  "total_bytes": 1024,
+  "total_frames": 1,
+  "sources": [
+    "33333333-3333-4333-8333-333333333333"
+  ],
+  "historical_definitions": {
+    "historical_only": true,
+    "sources": [
+      {
+        "source_id": "33333333-3333-4333-8333-333333333333",
+        "kind": "host",
+        "target_id": null,
+        "capability_revision": "mac-ollama-1",
+        "active": false
+      }
+    ],
+    "targets": [],
+    "models": []
+  },
+  "segments": [
+    {
+      "source_id": "33333333-3333-4333-8333-333333333333",
+      "from_sequence": 42,
+      "to_sequence": 42,
+      "first_ms": 1789473600000,
+      "last_ms": 1789473600000,
+      "frame_count": 1,
+      "bytes": 1024,
+      "segment_sha256": "14239cadfab27ad28cf3735c8a032321cbec105082833e6c5d20a5c99a72c5fb"
+    }
+  ],
+  "loss_intervals": [],
+  "manifest_sha256": "d72f80e4a49edd9a08a88204f064b8ad264501b42b5b5c9971e8abb0049c9679"
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://llm-monitor.local/contracts/bundle/v1/inventory.schema.json",
+  "title": "Bundle pseudonymized inventory v1", "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "hosts", "targets", "models", "processes", "associations"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "hosts": {"type": "array", "maxItems": 2, "items": {"$ref": "#/$defs/entity"}},
+    "targets": {"type": "array", "maxItems": 2, "items": {"$ref": "#/$defs/entity"}},
+    "models": {"type": "array", "maxItems": 128, "items": {"type": "object", "additionalProperties": false, "required": ["id", "alias", "digest", "digest_retained", "provenance"], "properties": {"id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}, "alias": {"type": "string", "pattern": "^model-[0-9]+$"}, "digest": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}, {"type": "null"}]}, "digest_retained": {"type": "boolean"}, "provenance": {"enum": ["runtime_api", "declared_unverified"]}}}},
+    "processes": {"type": "array", "maxItems": 512, "items": {"type": "object", "additionalProperties": false, "required": ["process_alias", "category", "start_identity_sha256"], "properties": {"process_alias": {"type": "string", "pattern": "^process-[0-9]+$"}, "category": {"enum": ["selected_ollama", "rmt", "other_same_user"]}, "start_identity_sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}}}},
+    "associations": {"type": "array", "maxItems": 512, "items": {"type": "object", "additionalProperties": false, "required": ["from_alias", "to_alias", "state", "reason"], "properties": {"from_alias": {"type": "string", "maxLength": 64}, "to_alias": {"type": "string", "maxLength": 64}, "state": {"enum": ["verified", "declared_unverified", "ambiguous", "none"]}, "reason": {"type": "string", "maxLength": 128}}}}
+  },
+  "$defs": {"entity": {"type": "object", "additionalProperties": false, "required": ["id", "alias"], "properties": {"id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}, "alias": {"type": "string", "pattern": "^(host|target)-[0-9]+$"}}}}
+}

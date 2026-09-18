@@ -1,0 +1,15 @@
+{
+  "bundle_version": "llm-monitor-bundle/1.0",
+  "structured_entries": {
+    "manifest.json": "manifest.schema.json",
+    "incident.json": "incident.schema.json",
+    "inventory.json": "inventory.schema.json",
+    "configuration.json": "configuration.schema.json",
+    "series.ndjson": "series-record.schema.json",
+    "coverage.json": "coverage.schema.json",
+    "comparison.json": "comparison.schema.json",
+    "probe.json": "probe.schema.json"
+  },
+  "static_entries": {"README.html": "script-free, no remote assets, no auto-open links"},
+  "opaque_entries": {"attachments/": "attachment-metadata.schema.json plus individually approved, hashed, size-bounded, operator-provided unverified bytes"}
+}

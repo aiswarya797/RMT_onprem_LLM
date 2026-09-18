@@ -1,0 +1,342 @@
+{
+  "schema_version": "rmt-u01-source-verification/1",
+  "checked_at": "2026-09-15",
+  "execution": "artifacts_downloaded_verified_no_runtime_start_import_or_inference",
+  "installed_runtime": {
+    "version": "0.12.10",
+    "distribution": "Homebrew",
+    "binary_path": "/opt/homebrew/Cellar/ollama/0.12.10/bin/ollama",
+    "sha256": "927cb7e99e331d5661f84b6e88e0dcd7ba97f43e1af86712bb1efe4e205acd09",
+    "signature": "ad-hoc; not Developer ID",
+    "existing_server_loaded_models": 0,
+    "modified": false,
+    "certification": "unverified"
+  },
+  "isolated_candidate": {
+    "version": "0.34.0",
+    "commit": "d8ab4b4f0ca24b51d3a46b3bf4f462e58ce66b1f",
+    "artifact_url": "https://github.com/ollama/ollama/releases/download/v0.34.0/ollama-darwin.tgz",
+    "artifact_size_bytes": 159589632,
+    "published_digest": "sha256:dd12b00bcce2d6551178e67ada90d5af9f75bdb54a118b96655250fa3e8ef734",
+    "downloaded": true,
+    "certification": "not_executed",
+    "reason": "Use a separate current official runtime; preserve installed service. Pinned current GGUF decoder checks zero/invalid string length and terminator on the reported CVE path; this is not a comprehensive security certification.",
+    "verified_sha256": "dd12b00bcce2d6551178e67ada90d5af9f75bdb54a118b96655250fa3e8ef734",
+    "extracted_binary_sha256": "c816ec43629787a7bd0168a965ece0641575ef602af82d4de0e48c821fc0d177",
+    "signature_verification": {
+      "command": "codesign --verify --strict --verbose=4 .work/u01-artifacts/ollama-0.34.0/ollama",
+      "result": "valid on disk; satisfies its Designated Requirement",
+      "environment": "approved outside sandbox; initial sandbox verification reported invalid signature",
+      "team_identifier": "3MU9H2V9Y9",
+      "authority": "Developer ID Application: Infra Technologies, Inc (3MU9H2V9Y9)",
+      "certificate_chain": [
+        "Developer ID Certification Authority",
+        "Apple Root CA"
+      ]
+    },
+    "embedded_build": {
+      "architecture": "arm64",
+      "go_version": "go1.26.0",
+      "module_version": "v0.34.0+dirty",
+      "vcs_revision": "d8ab4b4f0ca24b51d3a46b3bf4f462e58ce66b1f",
+      "vcs_modified": true,
+      "inspection": "go version -m on a nonexecuted arm64 inspection slice of the official universal binary",
+      "limitation": "Official signed artifact is authoritative; dirty build metadata means an exact clean-source reproducibility claim is unsupported."
+    }
+  },
+  "hugging_face_model": {
+    "repository": "ggml-org/Qwen3-0.6B-GGUF",
+    "revision": "b5f37287796e5be0ea3dab2e7430873fb3f73e49",
+    "file": "Qwen3-0.6B-Q4_0.gguf",
+    "size_bytes": 428970080,
+    "published_sha256": "da2572f16c06133561ce56accaa822216f2391ef4d37fba427801cd6736417d4",
+    "license": "Apache-2.0 as declared in model card",
+    "metadata_url": "https://huggingface.co/api/models/ggml-org/Qwen3-0.6B-GGUF/revision/main?blobs=true",
+    "downloaded_sha256": "da2572f16c06133561ce56accaa822216f2391ef4d37fba427801cd6736417d4",
+    "ollama_import_digest": null,
+    "quantization": "Q4_0",
+    "downloaded": true,
+    "verified_size_bytes": 428970080,
+    "format": "GGUF version 3"
+  },
+  "security_review": {
+    "advisory": "https://github.com/advisories/GHSA-jr3x-q8gx-4gw3",
+    "original_report": "https://zero.shotlearni.ng/blog/cve-2025-66960guf-v1-string-length-cause-panic-in-readggufv1string/",
+    "reported_affected_version": "0.12.10",
+    "published_patched_version": "unknown",
+    "review_limits": "Targeted official source and advisory review; no exploit run, no complete dependency vulnerability audit, no blanket safe-version claim. Product remains passive toward installed runtime; test uses known hash-pinned GGUF only.",
+    "osv_package_scan": {
+      "checked_at": "2026-09-15",
+      "query_endpoint": "https://api.osv.dev/v1/querybatch",
+      "ollama_go_packages_queried": 68,
+      "matched_packages": [
+        {
+          "package": "stdlib",
+          "version": "1.26.0",
+          "advisory_ids": [
+            "GO-2026-4599",
+            "GO-2026-4600",
+            "GO-2026-4601",
+            "GO-2026-4602",
+            "GO-2026-4603",
+            "GO-2026-4864",
+            "GO-2026-4865",
+            "GO-2026-4866",
+            "GO-2026-4869",
+            "GO-2026-4870",
+            "GO-2026-4918",
+            "GO-2026-4946",
+            "GO-2026-4947",
+            "GO-2026-4970",
+            "GO-2026-4971",
+            "GO-2026-4976",
+            "GO-2026-4977",
+            "GO-2026-4980",
+            "GO-2026-4981",
+            "GO-2026-4982",
+            "GO-2026-4986",
+            "GO-2026-5026",
+            "GO-2026-5037",
+            "GO-2026-5038",
+            "GO-2026-5039",
+            "GO-2026-5856",
+            "GO-2026-5942",
+            "GO-2026-5972",
+            "GO-2026-6088",
+            "GO-2026-6089",
+            "GO-2026-6090",
+            "GO-2026-6091",
+            "GO-2026-6218"
+          ]
+        },
+        {
+          "package": "github.com/buger/jsonparser",
+          "version": "v1.1.1",
+          "advisory_ids": [
+            "GHSA-6g7g-w4f8-9c9x",
+            "GO-2026-4514"
+          ]
+        },
+        {
+          "package": "github.com/klauspost/compress",
+          "version": "v1.18.3",
+          "advisory_ids": [
+            "GO-2026-5841"
+          ]
+        },
+        {
+          "package": "golang.org/x/crypto",
+          "version": "v0.43.0",
+          "advisory_ids": [
+            "GHSA-45gg-vh54-h5m9",
+            "GHSA-5cgq-3rg8-m6cv",
+            "GHSA-78mq-xcr3-xm33",
+            "GHSA-89gr-r52h-f8rx",
+            "GHSA-9m57-25v3-79x9",
+            "GHSA-f5wc-c3c7-36mc",
+            "GHSA-f6x5-jh6r-wrfv",
+            "GHSA-j5w8-q4qc-rx2x",
+            "GHSA-jppx-rxg9-jmrx",
+            "GHSA-q4h4-gmj2-qvw2",
+            "GHSA-qpw4-5x99-6vjp",
+            "GHSA-rm3j-f69w-wqmq",
+            "GHSA-vgwf-h737-ff37",
+            "GHSA-w879-237q-wc7r",
+            "GHSA-x527-x647-q7gg",
+            "GO-2025-4134",
+            "GO-2025-4135",
+            "GO-2026-5005",
+            "GO-2026-5006",
+            "GO-2026-5013",
+            "GO-2026-5014",
+            "GO-2026-5015",
+            "GO-2026-5016",
+            "GO-2026-5017",
+            "GO-2026-5018",
+            "GO-2026-5019",
+            "GO-2026-5020",
+            "GO-2026-5021",
+            "GO-2026-5023",
+            "GO-2026-5033",
+            "GO-2026-5932",
+            "GO-2026-6303",
+            "GO-2026-6354",
+            "GO-2026-6355"
+          ]
+        },
+        {
+          "package": "golang.org/x/image",
+          "version": "v0.22.0",
+          "advisory_ids": [
+            "GHSA-44p7-9xx4-hf2g",
+            "GHSA-q675-qj96-32m9",
+            "GO-2026-4815",
+            "GO-2026-4961",
+            "GO-2026-4962",
+            "GO-2026-5031",
+            "GO-2026-5032",
+            "GO-2026-5061",
+            "GO-2026-5062",
+            "GO-2026-5066",
+            "GO-2026-6222"
+          ]
+        },
+        {
+          "package": "golang.org/x/mod",
+          "version": "v0.30.0",
+          "advisory_ids": [
+            "GO-2026-6179",
+            "GO-2026-6180"
+          ]
+        },
+        {
+          "package": "golang.org/x/net",
+          "version": "v0.46.0",
+          "advisory_ids": [
+            "GHSA-5cv4-jp36-h3mw",
+            "GO-2026-4918",
+            "GO-2026-5025",
+            "GO-2026-5026",
+            "GO-2026-5027",
+            "GO-2026-5028",
+            "GO-2026-5029",
+            "GO-2026-5030",
+            "GO-2026-5942"
+          ]
+        },
+        {
+          "package": "golang.org/x/sys",
+          "version": "v0.37.0",
+          "advisory_ids": [
+            "GO-2026-5024"
+          ]
+        },
+        {
+          "package": "golang.org/x/text",
+          "version": "v0.30.0",
+          "advisory_ids": [
+            "GO-2026-5970"
+          ]
+        }
+      ],
+      "interpretation": "Package/version database matches only; no binary call-path reachability or exploitability determination. Go stdlib and eight dependencies matched. Native libraries are not covered. Runtime security qualification is pending; no clean/security-certified claim.",
+      "test_dependencies": "Five pinned PyPI test dependencies queried; zero returned matches. Absence of known matches is not a security guarantee."
+    }
+  },
+  "semantic_findings": [
+    "Reachable server, loaded model and successful observed generation are independent states.",
+    "Final duration fields are nanoseconds; omitted metrics remain unavailable.",
+    "Generate response, thinking, context token array, logprobs, debug data and raw error text are excluded from normalized evidence.",
+    "done=true for unload/load is not successful generation; terminal reason and requested operation matter.",
+    "/api/ps size_vram is runtime-reported allocation in unified memory, not dedicated VRAM or GPU activity.",
+    "Passive APIs do not provide all-traffic request timings or queue depth.",
+    "0.34 optional prompt_eval_cached_count is version specific and must not be assumed for 0.12.10."
+  ],
+  "source_file_hashes": {
+    ".work/u01-sources/hf-model.json": "80ff2f96f5e8b77571880bf9170855a7ad561ed9fc2aaec13db71dd5f46337d6",
+    ".work/u01-sources/hf-readme.md": "17a08dd875b50fbedc22e326c34e0e880e4a1cad12aa874defbca89e9203cd54",
+    ".work/u01-sources/ollama-034-cmd.go": "6a05b724bd55cc7b5cdf20e981a18e29a4b078d927fa5931c6f566457984e3c6",
+    ".work/u01-sources/ollama-034-env.go": "2263acbd4a6f93607594abe5632e5dbc1e17d69a804d55aa7245613bca05b2a7",
+    ".work/u01-sources/ollama-034-gguf.go": "3809e175d23573f37233784623dbb06a8e41bfed8a9eeb876e7a319b2d617abd",
+    ".work/u01-sources/ollama-034-routes.go": "99d48da007feaa85321ad24b25bff4d881c5bf329a5019aec642defe95396b73",
+    ".work/u01-sources/ollama-034-tag.json": "3cde4ce31ee86a75785dce98bc862389803c1ada6ddaa701d89cfde5f8582481",
+    ".work/u01-sources/ollama-034-types.go": "40c2647781a54fd3baedca021d495f3f7f899e217fce9697405e90b7930b9d8e",
+    ".work/u01-sources/ollama-latest.json": "a44fb345ac5406c0953b6f7b0e2be8e95a49239a4d8a4cb5523fa5a500beafe1",
+    ".work/u01-sources/ollama-license.txt": "5934ed2ce0d15154bcdb9c85203210abac0da4314af34081e36df4599f90b226",
+    ".work/u01-sources/ollama-routes.go": "6e39ff9a27c39d3b0f25f89e13f9ff024339fe7e76769881ce75b49b22630753",
+    ".work/u01-sources/ollama-security.md": "7acc32f439e510604de69bc1610b870b1c589cb0ffd74b5d8736dcae053cfc52",
+    ".work/u01-sources/ollama-tag.json": "7c8c32f69a40902bb543041437d08887c336ad8b5932eab11e70b421d18f0aed",
+    ".work/u01-sources/ollama-types.go": "572ab419a1710d60604aa8a1585d4756ef07692dad6fd1b6365df4913ddd1f61",
+    ".work/u01-sources/xnu-vm_resident.c": "a1b29f27cfd5b824b150e86fb3d27c551dbd7397dec31b1fd29c863bb4b92da1",
+    ".work/u01-sources/xnu-vm_user.c": "04c7af0f940748b4e43260eb40ade00de509b80db6063fd39acc390aa51f99ed",
+    ".work/u01-sources/xnu-vm_purgeable.c": "49af77d8b6a5593346f02396f8bf986e95aeae5df82b60e6af0fb8119e678b9e",
+    ".work/u01-sources/osv-test-dependencies.json": "bf3c2ddb52a6aba314966369c896aed3ef4b5e42cdb73b13bddaf07ea7beabb4",
+    ".work/u01-sources/osv-ollama-034.json": "7ee1d1962cca522afffdf51e6ca85b5c27ac2394e52d6db4067e0c625ab7a0f5",
+    ".work/u01-sources/ollama-034-arm64-buildinfo.txt": "04f73f09ccf15e60b41e654c17329ff70bfff169270f54546f8057562e65dfcf",
+    ".work/u01-sources/xnu-kern_memorystatus_notify.c": "552451e0067fd7ee3b70242f53bc87b87566cfdca72f2c66d1f97895668f38e8",
+    ".work/u01-sources/xnu-commit.json": "d810de4d3bffc904c8a4ec8ae377181458e77020094116781ab8fa331fdac724"
+  },
+  "pending": [
+    "Headroom method and finite live supervision qualification before any added model load",
+    "Pin import Modelfile and Ollama model digest if safety permits import",
+    "Run bounded six-request trial only after all safety gates pass on the test host",
+    "Candidate-level diagnostic/overhead and security qualification after app exists",
+    "Assess Ollama package-level vulnerability matches for reachable test/product paths and native dependencies before runtime security certification"
+  ],
+  "baseline_context": {
+    "observed_at_utc": "2026-09-15T15:41:33Z",
+    "commands": [
+      "top -l 2 -s 1 -n 0",
+      "df -k ."
+    ],
+    "top_second_sample": {
+      "cpu_idle_percent": 86.85,
+      "cpu_user_percent_as_displayed": "7.4",
+      "cpu_system_percent": 6.1,
+      "physical_used_mib_as_displayed": 7551,
+      "wired_mib_as_displayed": 1497,
+      "compressor_mib_as_displayed": 2621,
+      "unused_mib_as_displayed": 83,
+      "swapins_interval": 0,
+      "swapouts_interval": 0
+    },
+    "disk_available_kib": 153206144,
+    "interpretation": "Two short CPU observations only, not a sustained-load determination. Other desktop apps retained. No heavy test/build or inference suite running."
+  },
+  "feasibility_capture": "fixtures/macos/observations/u01-natural-baseline/manifest.json",
+  "test_dependencies": [
+    {
+      "name": "jsonschema",
+      "version": "4.26.0",
+      "license_expression": "MIT",
+      "usage": "U01 schema tests only"
+    },
+    {
+      "name": "attrs",
+      "version": "26.1.0",
+      "license_expression": "MIT",
+      "usage": "U01 schema tests only"
+    },
+    {
+      "name": "jsonschema-specifications",
+      "version": "2025.9.1",
+      "license_expression": "MIT",
+      "usage": "U01 schema tests only"
+    },
+    {
+      "name": "referencing",
+      "version": "0.37.0",
+      "license_expression": "MIT",
+      "usage": "U01 schema tests only"
+    },
+    {
+      "name": "rpds-py",
+      "version": "2026.6.3",
+      "license_expression": "MIT",
+      "usage": "U01 schema tests only"
+    }
+  ],
+  "apple_pressure_source": {
+    "repository": "apple-oss-distributions/xnu",
+    "tag": "xnu-11417.121.6",
+    "commit": "a1e26a70f38d1d7daa7b49b258e2f8538ad81650",
+    "path": "bsd/kern/kern_memorystatus_notify.c",
+    "sha256": "552451e0067fd7ee3b70242f53bc87b87566cfdca72f2c66d1f97895668f38e8",
+    "finding": "sysctl_memorystatus_vm_pressure_level converts internal state to dispatch level before SYSCTL_OUT; masked release sysctl, source/version-qualified rather than promised stable public API."
+  },
+  "sdk_counter_semantics": {
+    "sdk_path": "/Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk",
+    "headers": {
+      "usr/include/net/if.h": "f1c3e1c528e20ad8a56a098013e3467666be73b9c7a8b026f6fd58897431a216",
+      "usr/include/net/if_var.h": "9d9f0bdfeb5f8692271b89ca54bae5e865736e2b7bde4a3d5fd7dd7e54f1f009",
+      "usr/include/sys/socket.h": "3339ce661e7a5cb83147f1d9f850e64da8f486d5851293022400da987073e1d6",
+      "usr/include/mach/vm_statistics.h": "98821a016da0e46108d316cc25429501a9dfce32ebbf6048cbf4b542c4932b6a"
+    },
+    "findings": [
+      "if_data byte counters are uint32; if_data64 byte counters are uint64.",
+      "NET_RT_IFLIST2 and if_msghdr2 provide the candidate 64-bit interface observation path; bounds and actual field certification remain required.",
+      "compressor_page_count measures physical compressed-pager storage pages; total_uncompressed_pages_in_compressor is a different logical page count.",
+      "Aggregate host CPU busy/total tick ratio must not divide by core count a second time."
+    ]
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/api/v1/comparison.schema.json",
+  "title": "Comparison preview or saved result v1",
+  "oneOf": [
+    {"$ref": "#/$defs/requestResult"},
+    {"$ref": "#/$defs/hostWindowResult"}
+  ],
+  "$defs": {
+    "status": {"enum": ["insufficient_evidence", "observed_change_with_confounds", "observed_change_similar_recorded_conditions", "no_clear_observed_change"]},
+    "base": {
+      "type": "object",
+      "required": ["schema_version", "result_id", "persisted", "status", "metric_id", "confounds", "blocked_reasons", "claim_scope"],
+      "properties": {
+        "schema_version": {"const": "1.0"},
+        "result_id": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+        "persisted": {"type": "boolean"},
+        "status": {"$ref": "#/$defs/status"},
+        "metric_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/metricId"},
+        "confounds": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"}},
+        "blocked_reasons": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"}},
+        "claim_scope": {"enum": ["explicit_observed_requests_only_no_causal_claim", "host_observation_windows_no_causal_claim"]}
+      }
+    },
+    "requestResult": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["schema_version", "comparison_kind", "result_id", "persisted", "status", "metric_id", "before", "after", "declared_intervention", "confounds", "blocked_reasons", "claim_scope"],
+          "properties": {
+            "schema_version": {}, "comparison_kind": {"const": "request_run"}, "result_id": {}, "persisted": {}, "status": {},
+            "metric_id": {"enum": ["request.client.first_byte_ms", "request.client.first_content_ms", "request.client.total_ms", "request.runtime.total_duration_ms", "request.runtime.load_duration_ms", "request.runtime.prompt_eval_duration_ms", "request.runtime.eval_duration_ms", "request.runtime.prompt_tokens", "request.runtime.output_tokens"]},
+            "before": {"$ref": "../../metrics/v1/request-summary.schema.json"},
+            "after": {"$ref": "../../metrics/v1/request-summary.schema.json"},
+            "declared_intervention": {"anyOf": [{"$ref": "action-request.schema.json#/$defs/declaredIntervention"}, {"type": "null"}]},
+            "confounds": {}, "blocked_reasons": {}, "claim_scope": {"const": "explicit_observed_requests_only_no_causal_claim"}
+          }
+        }
+      ]
+    },
+    "hostWindowSummary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["start_ms", "end_ms", "coverage_ratio", "sample_count", "aggregate_kind", "minimum", "median", "maximum", "rate_per_second", "state_durations_ms"],
+      "properties": {
+        "start_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "end_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "coverage_ratio": {"type": "number", "minimum": 0, "maximum": 1},
+        "sample_count": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "aggregate_kind": {"enum": ["numeric_min_median_max", "counter_rate", "state_duration"]},
+        "minimum": {"anyOf": [{"type": "number"}, {"type": "string", "maxLength": 64}, {"type": "null"}]},
+        "median": {"anyOf": [{"type": "number"}, {"type": "string", "maxLength": 64}, {"type": "null"}]},
+        "maximum": {"anyOf": [{"type": "number"}, {"type": "string", "maxLength": 64}, {"type": "null"}]},
+        "rate_per_second": {"anyOf": [{"type": "number", "minimum": 0}, {"type": "null"}]},
+        "state_durations_ms": {"anyOf": [{"type": "object", "additionalProperties": false, "properties": {"normal": {"type": "integer", "minimum": 0}, "warning": {"type": "integer", "minimum": 0}, "critical": {"type": "integer", "minimum": 0}}}, {"type": "null"}]}
+      }
+    },
+    "hostWindowResult": {
+      "allOf": [
+        {"$ref": "#/$defs/base"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["schema_version", "comparison_kind", "result_id", "persisted", "status", "metric_id", "host_id", "source_id", "definition_revision", "method_revision", "resolution_tier", "epoch_id", "clock_method", "minimum_coverage_ratio", "before", "after", "confounds", "blocked_reasons", "claim_scope"],
+          "properties": {
+            "schema_version": {}, "comparison_kind": {"const": "host_window"}, "result_id": {}, "persisted": {}, "status": {},
+            "metric_id": {"$ref": "action-request.schema.json#/$defs/hostMetricId"},
+            "host_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+            "source_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+            "definition_revision": {"const": "mac-ollama-1"},
+            "method_revision": {"$ref": "../../collector/v1/common.schema.json#/$defs/safeString"},
+            "resolution_tier": {"enum": ["raw", "minute", "hour"]},
+            "epoch_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+            "clock_method": {"const": "single_host_monotonic_aligned"},
+            "minimum_coverage_ratio": {"const": 0.9},
+            "before": {"$ref": "#/$defs/hostWindowSummary"}, "after": {"$ref": "#/$defs/hostWindowSummary"},
+            "confounds": {}, "blocked_reasons": {}, "claim_scope": {"const": "host_observation_windows_no_causal_claim"}
+          }
+        }
+      ]
+    }
+  }
+}

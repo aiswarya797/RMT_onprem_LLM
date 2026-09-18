@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/collector/v1/recovery-replay.schema.json",
+  "title": "Authorized restored replay v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["protocol", "grant_id", "grant_sha256", "replay_request_id", "scope_sha256", "admitting_security_generation", "admitting_session_generation", "admitting_collector_boot_id", "deployment_id", "host_id", "original_security_generation", "original_collector_boot_id", "frames"],
+  "properties": {
+    "protocol": {"const": "1.0"},
+    "grant_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "grant_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+    "replay_request_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "scope_sha256": {"$ref": "common.schema.json#/$defs/sha256", "$comment": "SHA-256 of the fixed replay scope projection: grant_sha256 through frames, excluding protocol, grant_id and scope_sha256."},
+    "admitting_security_generation": {"$ref": "common.schema.json#/$defs/epoch"},
+    "admitting_session_generation": {"$ref": "common.schema.json#/$defs/positiveUint53"},
+    "admitting_collector_boot_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "deployment_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "host_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "original_security_generation": {"$ref": "common.schema.json#/$defs/epoch"},
+    "original_collector_boot_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "frames": {"type": "array", "minItems": 1, "maxItems": 4, "$comment": "A request contains one or more complete reviewed segments. Four 256 KiB canonical frames bound decoded frame processing to 1 MiB; the 4 MiB request decoder limit independently bounds JSON expansion.", "items": {"type": "object", "additionalProperties": false, "required": ["original_source_id", "original_sequence", "original_observed_ms", "original_payload_sha256", "frame"], "properties": {"original_source_id": {"$ref": "common.schema.json#/$defs/uuid"}, "original_sequence": {"$ref": "common.schema.json#/$defs/uint53"}, "original_observed_ms": {"$ref": "common.schema.json#/$defs/uint53"}, "original_payload_sha256": {"$ref": "common.schema.json#/$defs/sha256"}, "frame": {"$ref": "batch.schema.json#/$defs/frame"}}}}
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/collector/v1/session-result.schema.json",
+  "title": "Collector session activation result v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["activation_request_id", "security_generation", "session_generation", "collector_boot_id", "activated_ms", "current"],
+  "properties": {
+    "activation_request_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "security_generation": {"$ref": "common.schema.json#/$defs/epoch"},
+    "session_generation": {"$ref": "common.schema.json#/$defs/positiveUint53"},
+    "collector_boot_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "activated_ms": {"$ref": "common.schema.json#/$defs/uint53"},
+    "current": {"const": true}
+  }
+}

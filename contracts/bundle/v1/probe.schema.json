@@ -1,0 +1,4 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://llm-monitor.local/contracts/bundle/v1/probe.schema.json",
+  "title": "Optional approved bundle probe entry v1", "$ref": "../../probe/v1/request-run.schema.json"
+}

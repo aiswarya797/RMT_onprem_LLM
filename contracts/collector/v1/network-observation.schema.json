@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/collector/v1/network-observation.schema.json",
+  "title": "Bounded Darwin network-interface counter observation v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["interface_id", "boot_id", "counter_epoch_id", "loopback", "received_bytes_total", "sent_bytes_total", "missing", "provenance"],
+  "properties": {
+    "interface_id": {"$ref": "common.schema.json#/$defs/sha256"},
+    "boot_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "counter_epoch_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "loopback": {"type": "boolean"},
+    "received_bytes_total": {"anyOf": [{"$ref": "common.schema.json#/$defs/uint64Decimal"}, {"type": "null"}]},
+    "sent_bytes_total": {"anyOf": [{"$ref": "common.schema.json#/$defs/uint64Decimal"}, {"type": "null"}]},
+    "missing": {"type": "array", "maxItems": 2, "items": {"$ref": "common.schema.json#/$defs/missingCapability"}},
+    "provenance": {"$ref": "common.schema.json#/$defs/provenance"}
+  }
+}

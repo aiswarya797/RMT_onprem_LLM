@@ -1,0 +1,17 @@
+{
+  "baseline": {
+    "pressure": {"ok": true, "raw": 1},
+    "headroom": {"ok": true, "consistent": true, "independently_validated": true, "floor_bytes": 3221225472},
+    "swap": {"ok": true, "used_bytes": 2147483648},
+    "desktop": {"ok": true, "round_trip_ms": 10.0},
+    "owned_tree": {"requested": false, "ok": true, "processes": []}
+  },
+  "threshold": {
+    "pressure": {"ok": true, "raw": 1},
+    "headroom": {"ok": true, "consistent": true, "independently_validated": true, "floor_bytes": 3221225472},
+    "swap": {"ok": true, "used_bytes": 2281701376},
+    "desktop": {"ok": true, "round_trip_ms": 10.0},
+    "owned_tree": {"requested": false, "ok": true, "processes": []}
+  },
+  "expected_stop_reason": "swap_growth_128mib_30s"
+}

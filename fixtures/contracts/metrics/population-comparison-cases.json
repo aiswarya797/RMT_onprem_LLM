@@ -1,0 +1,150 @@
+{
+  "schema_version": "rmt-contract-fixture/1",
+  "fixture_id": "request-population-comparison-cases",
+  "synthetic": true,
+  "provenance": {
+    "registry_revision": "mac-ollama-1",
+    "source": "contract_fixture",
+    "runtime_capture": false
+  },
+  "base_population": {
+    "target_id": "00000000-0000-4000-8000-000000000004",
+    "model_digest": "da2572f16c06133561ce56accaa822216f2391ef4d37fba427801cd6736417d4",
+    "runtime_version": "0.34.0",
+    "runtime_build": "d8ab4b4f0ca24b51d3a46b3bf4f462e58ce66b1f",
+    "config_revision": "1111111111111111111111111111111111111111111111111111111111111111",
+    "profile_id": "short_text_v1",
+    "profile_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "options": {
+      "num_ctx": 1024,
+      "num_predict": 64,
+      "temperature": 0.0,
+      "seed": 7,
+      "think": false,
+      "stream": true,
+      "cold_warm_policy": "warm_model_reported_loaded"
+    },
+    "concurrency": 1,
+    "vantage_id": "mac-local",
+    "clock_method": "monotonic",
+    "source_kind": "deliberate_probe",
+    "verification_state": "direct_capture"
+  },
+  "cases": [
+    {
+      "id": "strict-match",
+      "changes": {},
+      "declared_intervention": null,
+      "expected": "eligible_strict"
+    },
+    {
+      "id": "one-declared-config-change",
+      "changes": {
+        "config_revision": "5555555555555555555555555555555555555555555555555555555555555555"
+      },
+      "declared_intervention": {
+        "type": "config_revision",
+        "field": "config_revision",
+        "before_value_sha256": "9893dbecea30a1967b48d93a4d917ba9e22dae4e6f9abbaca2a9865672def7e3",
+        "after_value_sha256": "0edc0d492e67091aa6f23f534a6117f6d5ba5401ad480962f5f15e58716f0a8c",
+        "declaration_id": "00000000-0000-4000-8000-000000000011",
+        "declared_time_ms": 1789473600000
+      },
+      "expected": "eligible_observed_change_with_confounds"
+    },
+    {
+      "id": "one-declared-runtime-change",
+      "changes": {
+        "runtime_version": "0.34.1",
+        "runtime_build": "abcdef0123456789abcdef0123456789abcdef01"
+      },
+      "declared_intervention": {
+        "type": "runtime_version",
+        "field": "runtime_version",
+        "before_value_sha256": "41c93615c8bead3eb0ae3269a530796acf4c051ac35e65b90f689a5efd1e5837",
+        "after_value_sha256": "89944c92f5fab14847429b7b68f8a50546237f71753623b63e1ab6449347765f",
+        "declaration_id": "00000000-0000-4000-8000-000000000012",
+        "declared_time_ms": 1789473600000
+      },
+      "expected": "eligible_observed_change_with_confounds"
+    },
+    {
+      "id": "one-declared-option-change",
+      "changes": {
+        "options.temperature": 0.2
+      },
+      "declared_intervention": {
+        "type": "generation_option",
+        "field": "temperature",
+        "before_value_sha256": "8aed642bf5118b9d3c859bd4be35ecac75b6e873cce34e7b6f554b06f75550d7",
+        "after_value_sha256": "44896b09365746b5f7167ee4d64988a38f7f4628803cbf86224e74eeb7c69e9d",
+        "declaration_id": "00000000-0000-4000-8000-000000000013",
+        "declared_time_ms": 1789473600000
+      },
+      "expected": "eligible_observed_change_with_confounds"
+    },
+    {
+      "id": "model-mismatch",
+      "changes": {
+        "model_digest": "6666666666666666666666666666666666666666666666666666666666666666"
+      },
+      "declared_intervention": null,
+      "expected": "blocked"
+    },
+    {
+      "id": "provenance-mismatch",
+      "changes": {
+        "source_kind": "imported_test",
+        "verification_state": "operator_imported_unverified"
+      },
+      "declared_intervention": null,
+      "expected": "blocked"
+    },
+    {
+      "id": "multiple-changes",
+      "changes": {
+        "config_revision": "5555555555555555555555555555555555555555555555555555555555555555",
+        "options.temperature": 0.2
+      },
+      "declared_intervention": {
+        "type": "config_revision",
+        "field": "config_revision",
+        "before_value_sha256": "9893dbecea30a1967b48d93a4d917ba9e22dae4e6f9abbaca2a9865672def7e3",
+        "after_value_sha256": "0edc0d492e67091aa6f23f534a6117f6d5ba5401ad480962f5f15e58716f0a8c",
+        "declaration_id": "00000000-0000-4000-8000-000000000014",
+        "declared_time_ms": 1789473600000
+      },
+      "expected": "blocked"
+    },
+    {
+      "id": "added-generation-option-key",
+      "changes": {
+        "options.unregistered_option": 1
+      },
+      "declared_intervention": {
+        "type": "generation_option",
+        "field": "unregistered_option",
+        "before_value_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "after_value_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "declaration_id": "00000000-0000-4000-8000-000000000015",
+        "declared_time_ms": 1789473600000
+      },
+      "expected": "blocked"
+    },
+    {
+      "id": "tampered-intervention-value-hash",
+      "changes": {
+        "config_revision": "5555555555555555555555555555555555555555555555555555555555555555"
+      },
+      "declared_intervention": {
+        "type": "config_revision",
+        "field": "config_revision",
+        "before_value_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "after_value_sha256": "0edc0d492e67091aa6f23f534a6117f6d5ba5401ad480962f5f15e58716f0a8c",
+        "declaration_id": "00000000-0000-4000-8000-000000000016",
+        "declared_time_ms": 1789473600000
+      },
+      "expected": "blocked"
+    }
+  ]
+}

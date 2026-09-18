@@ -1,0 +1,283 @@
+{
+  "schema_version": "1.0",
+  "manifest_id": "c1000000-0000-4000-8000-000000000001",
+  "registry_revision": "mac-ollama-1",
+  "captured_at_utc": "2026-09-15T15:43:08.884658+00:00",
+  "compatibility_scope": "single_local_mac_candidate",
+  "qualification_stage": "private_trial",
+  "status": "unverified",
+  "execution_status": "partially_executed",
+  "host": {
+    "architecture": "arm64",
+    "chip": "Apple M1",
+    "model": "MacBookAir10,1",
+    "physical_memory_bytes": 8589934592,
+    "os_version": "macOS 15.5",
+    "os_build": "24F74",
+    "evidence_state": "observed_by_feasibility_helper_unverified_for_rmt"
+  },
+  "platform_fields": {
+    "gpu_driver": {
+      "value": null,
+      "status": "not_applicable",
+      "reason": "Apple unified-memory Mac contract has no NVIDIA-style driver field."
+    },
+    "container_image": {
+      "value": null,
+      "status": "not_applicable",
+      "reason": "The native same-user Ollama contract does not use a container image."
+    }
+  },
+  "runtime": {
+    "name": "ollama",
+    "version": "0.34.0",
+    "commit": "d8ab4b4f0ca24b51d3a46b3bf4f462e58ce66b1f",
+    "artifact_sha256": "dd12b00bcce2d6551178e67ada90d5af9f75bdb54a118b96655250fa3e8ef734",
+    "binary_sha256": "c816ec43629787a7bd0168a965ece0641575ef602af82d4de0e48c821fc0d177",
+    "signature_state": "developer_id_verified",
+    "team_id": "3MU9H2V9Y9",
+    "embedded_go_version": "go1.26.0",
+    "module_version": "v0.34.0+dirty",
+    "vcs_modified": true,
+    "security_qualification": "pending",
+    "artifact_url": "https://github.com/ollama/ollama/releases/download/v0.34.0/ollama-darwin.tgz",
+    "artifact_size_bytes": 159589632,
+    "execution_status": "not_executed"
+  },
+  "model": {
+    "repository": "ggml-org/Qwen3-0.6B-GGUF",
+    "revision": "b5f37287796e5be0ea3dab2e7430873fb3f73e49",
+    "file": "Qwen3-0.6B-Q4_0.gguf",
+    "size_bytes": 428970080,
+    "sha256": "da2572f16c06133561ce56accaa822216f2391ef4d37fba427801cd6736417d4",
+    "format": "GGUF version 3",
+    "quantization": "Q4_0",
+    "ollama_import_digest": null,
+    "execution_status": "downloaded_only",
+    "license": "Apache-2.0",
+    "tokenizer": {
+      "state": "embedded_in_gguf_not_separately_retrievable",
+      "sha256": null
+    },
+    "dataset": {
+      "state": "not_used",
+      "sha256": null
+    },
+    "prompt_profile": {
+      "state": "not_frozen",
+      "profile_id": null,
+      "sha256": null
+    }
+  },
+  "rmt_artifact": {
+    "present": false,
+    "build_id": null,
+    "sha256": null,
+    "signed": false,
+    "notarized": false,
+    "executed": false
+  },
+  "field_capabilities": [
+    {
+      "id": "host.cpu.busy_ratio",
+      "status": "unverified",
+      "reason": "No signed RMT collector exists; helper observations do not certify this product field."
+    },
+    {
+      "id": "host.memory.pressure_level",
+      "status": "unverified",
+      "reason": "No signed RMT collector exists; helper observations do not certify this product field."
+    },
+    {
+      "id": "host.memory.compressed_bytes",
+      "status": "unverified",
+      "reason": "No signed RMT collector exists; helper observations do not certify this product field."
+    },
+    {
+      "id": "host.memory.swap_used_bytes",
+      "status": "unverified",
+      "reason": "No signed RMT collector exists; helper observations do not certify this product field."
+    },
+    {
+      "id": "host.disk.free_bytes",
+      "status": "unverified",
+      "reason": "No signed RMT collector exists; helper observations do not certify this product field."
+    },
+    {
+      "id": "host.network.received_bytes_total",
+      "status": "unverified",
+      "reason": "No signed RMT collector exists; helper observations do not certify this product field."
+    },
+    {
+      "id": "host.network.sent_bytes_total",
+      "status": "unverified",
+      "reason": "No signed RMT collector exists; helper observations do not certify this product field."
+    },
+    {
+      "id": "process.cpu.busy_ratio",
+      "status": "unverified",
+      "reason": "No signed RMT collector exists; helper observations do not certify this product field."
+    },
+    {
+      "id": "process.physical_footprint_bytes",
+      "status": "unverified",
+      "reason": "No signed RMT collector exists; helper observations do not certify this product field."
+    },
+    {
+      "id": "runtime.reachable",
+      "status": "unverified",
+      "reason": "The isolated Ollama 0.34.0 binary was inspected but never started."
+    },
+    {
+      "id": "runtime.model.loaded",
+      "status": "unverified",
+      "reason": "The isolated Ollama 0.34.0 binary was inspected but never started."
+    },
+    {
+      "id": "runtime.model.reported_size_bytes",
+      "status": "unverified",
+      "reason": "The isolated Ollama 0.34.0 binary was inspected but never started."
+    },
+    {
+      "id": "runtime.model.reported_size_vram_bytes",
+      "status": "unverified",
+      "reason": "The isolated Ollama 0.34.0 binary was inspected but never started."
+    },
+    {
+      "id": "request.client.first_byte_ms",
+      "status": "unverified",
+      "reason": "No model request was submitted; no request field has runtime evidence."
+    },
+    {
+      "id": "request.client.first_content_ms",
+      "status": "unverified",
+      "reason": "No model request was submitted; no request field has runtime evidence."
+    },
+    {
+      "id": "request.client.total_ms",
+      "status": "unverified",
+      "reason": "No model request was submitted; no request field has runtime evidence."
+    },
+    {
+      "id": "request.runtime.total_duration_ms",
+      "status": "unverified",
+      "reason": "No model request was submitted; no request field has runtime evidence."
+    },
+    {
+      "id": "request.runtime.load_duration_ms",
+      "status": "unverified",
+      "reason": "No model request was submitted; no request field has runtime evidence."
+    },
+    {
+      "id": "request.runtime.prompt_eval_duration_ms",
+      "status": "unverified",
+      "reason": "No model request was submitted; no request field has runtime evidence."
+    },
+    {
+      "id": "request.runtime.eval_duration_ms",
+      "status": "unverified",
+      "reason": "No model request was submitted; no request field has runtime evidence."
+    },
+    {
+      "id": "request.runtime.prompt_tokens",
+      "status": "unverified",
+      "reason": "No model request was submitted; no request field has runtime evidence."
+    },
+    {
+      "id": "request.runtime.output_tokens",
+      "status": "unverified",
+      "reason": "No model request was submitted; no request field has runtime evidence."
+    },
+    {
+      "id": "gpu.busy_ratio",
+      "status": "unavailable",
+      "reason": "Unsupported by the first native Mac/Ollama platform contract."
+    },
+    {
+      "id": "gpu.power_watts",
+      "status": "unavailable",
+      "reason": "Unsupported by the first native Mac/Ollama platform contract."
+    },
+    {
+      "id": "gpu.temperature_celsius",
+      "status": "unavailable",
+      "reason": "Unsupported by the first native Mac/Ollama platform contract."
+    },
+    {
+      "id": "gpu.process_memory_bytes",
+      "status": "unavailable",
+      "reason": "Unsupported by the first native Mac/Ollama platform contract."
+    },
+    {
+      "id": "runtime.queue_depth",
+      "status": "unavailable",
+      "reason": "Unsupported by the first native Mac/Ollama platform contract."
+    },
+    {
+      "id": "runtime.active_requests",
+      "status": "unavailable",
+      "reason": "Unsupported by the first native Mac/Ollama platform contract."
+    },
+    {
+      "id": "runtime.cache_hit_ratio",
+      "status": "unavailable",
+      "reason": "Unsupported by the first native Mac/Ollama platform contract."
+    },
+    {
+      "id": "request.passive.first_byte_ms",
+      "status": "unavailable",
+      "reason": "Unsupported by the first native Mac/Ollama platform contract."
+    },
+    {
+      "id": "request.passive.total_ms",
+      "status": "unavailable",
+      "reason": "Unsupported by the first native Mac/Ollama platform contract."
+    }
+  ],
+  "security_review": {
+    "status": "pending",
+    "osv_package_queries": 68,
+    "matched_dependency_count": 9,
+    "native_libraries_covered": false,
+    "call_path_reachability_determined": false
+  },
+  "source_verification_sha256": "65006782c993b9baea3af5b4a427db7ed9d96942b791c7337a2fd3577d07697f",
+  "evidence": [
+    {
+      "kind": "source_inspection",
+      "path": "docs/implementation/u01-source-verification.json",
+      "sha256": "65006782c993b9baea3af5b4a427db7ed9d96942b791c7337a2fd3577d07697f",
+      "synthetic": false,
+      "execution": "not_executed"
+    },
+    {
+      "kind": "natural_baseline",
+      "path": "fixtures/macos/observations/u01-natural-baseline/observations.jsonl",
+      "sha256": "872ed3de85e0c0beb4586e1d35c86c59432d16bad5322e69768baa2813c777d4",
+      "synthetic": false,
+      "execution": "observation_only"
+    }
+  ],
+  "certification_gates": [
+    "independent_astra_review",
+    "ollama_runtime_capture",
+    "model_import_digest_and_profile",
+    "rmt_signed_notarized_artifact",
+    "t16_t24_field_capture",
+    "launchagent_lifecycle",
+    "rmt_diagnostics_and_overhead",
+    "trial_72h"
+  ],
+  "later_stage_gates": [
+    "soak_30d"
+  ],
+  "limitations": [
+    "No RMT application artifact exists; signing, notarization, lifecycle, diagnostics, and overhead are untested.",
+    "The isolated Ollama 0.34.0 binary was not started; no model import, request, generation, cancellation, or cleanup ran.",
+    "The natural baseline is observation-only and certifies neither the product collector nor the runtime.",
+    "The headroom proxy was uncertified and denied load; normal pressure does not establish model fit.",
+    "OSV package matches do not establish reachable impact or comprehensive security; native libraries were not covered.",
+    "Dirty embedded build metadata prevents a clean-source reproducibility claim.",
+    "GPU activity, power, temperature, per-process GPU memory, passive queue, concurrency, cache, and all-traffic latency are unavailable."
+  ]
+}

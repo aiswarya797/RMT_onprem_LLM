@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/collector/v1/inventory-result.schema.json",
+  "title": "Durable collector inventory registration result v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["inventory_revision", "durable", "current", "hub_time_ms", "control_requests"],
+  "properties": {
+    "inventory_revision": {"$ref": "common.schema.json#/$defs/sha256"},
+    "durable": {"const": true},
+    "current": {"type": "boolean"},
+    "hub_time_ms": {"$ref": "common.schema.json#/$defs/uint53"},
+    "control_requests": {"type": "array", "maxItems": 8, "items": {"$ref": "control-request.schema.json"}}
+  }
+}

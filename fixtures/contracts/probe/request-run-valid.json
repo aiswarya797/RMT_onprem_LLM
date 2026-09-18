@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0",
+  "run_id": "00000000-0000-4000-8000-000000000007",
+  "deployment_id": "00000000-0000-4000-8000-000000000001",
+  "host_id": "00000000-0000-4000-8000-000000000002",
+  "source_id": "00000000-0000-4000-8000-000000000003",
+  "target_id": "00000000-0000-4000-8000-000000000004",
+  "model_id": "00000000-0000-4000-8000-000000000005",
+  "config_snapshot_id": "00000000-0000-4000-8000-000000000006",
+  "source_kind": "deliberate_probe",
+  "verification_state": "direct_capture",
+  "population_key": {
+    "target_id": "00000000-0000-4000-8000-000000000004",
+    "model_digest": "da2572f16c06133561ce56accaa822216f2391ef4d37fba427801cd6736417d4",
+    "runtime_version": "0.34.0",
+    "runtime_build": "d8ab4b4f0ca24b51d3a46b3bf4f462e58ce66b1f",
+    "config_revision": "1111111111111111111111111111111111111111111111111111111111111111",
+    "profile_id": "short_text_v1",
+    "profile_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "options": {
+      "num_ctx": 1024,
+      "num_predict": 64,
+      "temperature": 0.0,
+      "seed": 7,
+      "think": false,
+      "stream": true,
+      "cold_warm_policy": "warm_model_reported_loaded"
+    },
+    "concurrency": 1,
+    "vantage_id": "mac-local",
+    "clock_method": "monotonic",
+    "source_kind": "deliberate_probe",
+    "verification_state": "direct_capture"
+  },
+  "expected_count": 1,
+  "submitted_count": 1,
+  "completed_count": 1,
+  "failed_count": 0,
+  "cancelled_count": 0,
+  "incomplete_count": 0,
+  "decoded_size_bytes": 4096,
+  "finalization_state": "finalized",
+  "partial_reason": null,
+  "content_persistence": "none",
+  "samples": [
+    {
+      "schema_version": "1.0",
+      "sample_id": "00000000-0000-4000-8000-000000000008",
+      "run_id": "00000000-0000-4000-8000-000000000007",
+      "source_kind": "deliberate_probe",
+      "verification_state": "direct_capture",
+      "observation_scope": "explicit_observed_request",
+      "deployment_id": "00000000-0000-4000-8000-000000000001",
+      "host_id": "00000000-0000-4000-8000-000000000002",
+      "source_id": "00000000-0000-4000-8000-000000000003",
+      "target_id": "00000000-0000-4000-8000-000000000004",
+      "model_id": "00000000-0000-4000-8000-000000000005",
+      "config_snapshot_id": "00000000-0000-4000-8000-000000000006",
+      "population_key": {
+        "target_id": "00000000-0000-4000-8000-000000000004",
+        "model_digest": "da2572f16c06133561ce56accaa822216f2391ef4d37fba427801cd6736417d4",
+        "runtime_version": "0.34.0",
+        "runtime_build": "d8ab4b4f0ca24b51d3a46b3bf4f462e58ce66b1f",
+        "config_revision": "1111111111111111111111111111111111111111111111111111111111111111",
+        "profile_id": "short_text_v1",
+        "profile_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "options": {
+          "num_ctx": 1024,
+          "num_predict": 64,
+          "temperature": 0.0,
+          "seed": 7,
+          "think": false,
+          "stream": true,
+          "cold_warm_policy": "warm_model_reported_loaded"
+        },
+        "concurrency": 1,
+        "vantage_id": "mac-local",
+        "clock_method": "monotonic",
+        "source_kind": "deliberate_probe",
+        "verification_state": "direct_capture"
+      },
+      "runtime_source_pin_id": "ollama-0.34.0-source",
+      "runtime_operation": "generate",
+      "terminal_record_observed": true,
+      "submitted_at_ms": 1789473600000,
+      "offsets_ns": {
+        "submit": "0",
+        "headers": "1000000",
+        "first_byte": "2000000",
+        "first_thinking": "3000000",
+        "first_content": "4000000",
+        "end": "10000000"
+      },
+      "http_status": 200,
+      "terminal_status": "completed",
+      "done_reason": "stop",
+      "safe_error_category": null,
+      "metrics": {
+        "request.client.first_byte_ms": 2.0,
+        "request.client.first_content_ms": 4.0,
+        "request.client.total_ms": 10.0,
+        "request.runtime.total_duration_ms": 9.0,
+        "request.runtime.load_duration_ms": 1.0,
+        "request.runtime.prompt_eval_duration_ms": 2.0,
+        "request.runtime.eval_duration_ms": 6.0,
+        "request.runtime.prompt_tokens": 8,
+        "request.runtime.output_tokens": 4
+      },
+      "field_provenance": {
+        "request.client.first_byte_ms": {
+          "source": "client_monotonic",
+          "verification": "direct_capture",
+          "missing_reason": null
+        },
+        "request.client.first_content_ms": {
+          "source": "client_monotonic",
+          "verification": "direct_capture",
+          "missing_reason": null
+        },
+        "request.client.total_ms": {
+          "source": "client_monotonic",
+          "verification": "direct_capture",
+          "missing_reason": null
+        },
+        "request.runtime.total_duration_ms": {
+          "source": "ollama_terminal",
+          "verification": "direct_capture",
+          "missing_reason": null
+        },
+        "request.runtime.load_duration_ms": {
+          "source": "ollama_terminal",
+          "verification": "direct_capture",
+          "missing_reason": null
+        },
+        "request.runtime.prompt_eval_duration_ms": {
+          "source": "ollama_terminal",
+          "verification": "direct_capture",
+          "missing_reason": null
+        },
+        "request.runtime.eval_duration_ms": {
+          "source": "ollama_terminal",
+          "verification": "direct_capture",
+          "missing_reason": null
+        },
+        "request.runtime.prompt_tokens": {
+          "source": "ollama_terminal",
+          "verification": "direct_capture",
+          "missing_reason": null
+        },
+        "request.runtime.output_tokens": {
+          "source": "ollama_terminal",
+          "verification": "direct_capture",
+          "missing_reason": null
+        }
+      },
+      "content_persistence": "none"
+    }
+  ]
+}

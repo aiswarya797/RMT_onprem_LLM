@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/api/v1/incident-request.schema.json",
+  "title": "Manual investigation mutation requests v1",
+  "$defs": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "id"],
+      "properties": {
+        "kind": {"enum": ["host", "runtime", "model", "process"]},
+        "id": {
+          "anyOf": [
+            {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+            {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}
+          ]
+        }
+      }
+    },
+    "manualIncidentCreate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "scope", "start", "end"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[^<>\\u0000-\\u001f\\u007f]*$"
+        },
+        "scope": {"$ref": "#/$defs/scope"},
+        "start": {"type": "string", "format": "date-time"},
+        "end": {"type": "string", "format": "date-time"}
+      }
+    },
+    "manualIncidentUpdate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected_revision"],
+      "anyOf": [
+        {"required": ["title"]},
+        {"required": ["workflow_state"]}
+      ],
+      "properties": {
+        "expected_revision": {"type": "integer", "minimum": 1},
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[^<>\\u0000-\\u001f\\u007f]*$"
+        },
+        "workflow_state": {"enum": ["open", "closed"]}
+      }
+    },
+    "annotationCreate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["incident_id", "declared_time_ms", "text"],
+      "properties": {
+        "incident_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+        "declared_time_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048,
+          "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f]*$"
+        }
+      }
+    },
+    "annotationEdit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected_revision", "text"],
+      "properties": {
+        "expected_revision": {"type": "integer", "minimum": 1},
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048,
+          "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f]*$"
+        }
+      }
+    }
+  }
+}

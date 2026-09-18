@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/collector/v1/source-status.schema.json",
+  "title": "Reserved collector status lane v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["protocol", "deployment_id", "host_id", "security_generation", "session_generation", "collector_boot_id", "sequence", "observed_wall_ms", "heartbeat", "sources", "loss_intervals"],
+  "properties": {
+    "protocol": {"const": "1.0"},
+    "deployment_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "host_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "security_generation": {"$ref": "common.schema.json#/$defs/epoch"},
+    "session_generation": {"$ref": "common.schema.json#/$defs/positiveUint53"},
+    "collector_boot_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "sequence": {"$ref": "common.schema.json#/$defs/uint53"},
+    "observed_wall_ms": {"$ref": "common.schema.json#/$defs/uint53"},
+    "heartbeat": {"enum": ["fresh", "degraded"]},
+    "sources": {
+      "type": "array", "maxItems": 8,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["source_id", "state", "last_success_ms", "failure_reason", "first_failure_ms", "failure_count"],
+        "properties": {
+          "source_id": {"$ref": "common.schema.json#/$defs/uuid"},
+          "state": {"enum": ["fresh", "stale", "unavailable", "incompatible"]},
+          "last_success_ms": {"anyOf": [{"$ref": "common.schema.json#/$defs/uint53"}, {"type": "null"}]},
+          "failure_reason": {"anyOf": [{"$ref": "common.schema.json#/$defs/missingReason"}, {"type": "null"}]},
+          "first_failure_ms": {"anyOf": [{"$ref": "common.schema.json#/$defs/uint53"}, {"type": "null"}]},
+          "failure_count": {"type": "integer", "minimum": 0, "maximum": 1000000}
+        }
+      }
+    },
+    "loss_intervals": {
+      "type": "array", "maxItems": 16,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["source_id", "start_ms", "end_ms", "lost_count", "reason"],
+        "properties": {
+          "source_id": {"$ref": "common.schema.json#/$defs/uuid"},
+          "start_ms": {"$ref": "common.schema.json#/$defs/uint53"},
+          "end_ms": {"$ref": "common.schema.json#/$defs/uint53"},
+          "lost_count": {"$ref": "common.schema.json#/$defs/positiveUint53"},
+          "reason": {"enum": ["spool_capacity", "spool_age", "oversized_frame", "corrupt_record"]}
+        }
+      }
+    }
+  }
+}

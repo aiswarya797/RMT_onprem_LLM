@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/probe/v1/request-sample.schema.json",
+  "title": "Content-free observed request sample v1",
+  "x-client-timing-contract": {
+    "offset_unit": "nanoseconds",
+    "value_unit": "milliseconds",
+    "conversion_divisor": 1000000,
+    "absolute_tolerance_ms": 0.001,
+    "observed_duration_max_ms": 120000,
+    "request_deadline_ms": 60000,
+    "bindings": {
+      "request.client.first_byte_ms": "first_byte",
+      "request.client.first_content_ms": "first_content",
+      "request.client.total_ms": "end"
+    }
+  },
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "sample_id", "run_id", "source_kind", "verification_state", "observation_scope", "deployment_id", "host_id", "source_id", "target_id", "model_id", "config_snapshot_id", "population_key", "runtime_source_pin_id", "runtime_operation", "terminal_record_observed", "submitted_at_ms", "offsets_ns", "http_status", "terminal_status", "done_reason", "safe_error_category", "metrics", "field_provenance", "content_persistence"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "sample_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "run_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "source_kind": {"enum": ["deliberate_probe", "imported_test"]},
+    "verification_state": {"enum": ["direct_capture", "operator_imported_unverified"]},
+    "observation_scope": {"const": "explicit_observed_request"},
+    "deployment_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "host_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "source_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "target_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "model_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "config_snapshot_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "population_key": {"$ref": "../../collector/v1/common.schema.json#/$defs/populationKey"},
+    "runtime_source_pin_id": {"enum": ["ollama-0.34.0-source", "ollama-0.12.10-source", "operator-import-unverified"]},
+    "runtime_operation": {"const": "generate"},
+    "terminal_record_observed": {"type": "boolean"},
+    "submitted_at_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+    "offsets_ns": {
+      "type": "object", "additionalProperties": false,
+      "required": ["submit", "headers", "first_byte", "first_thinking", "first_content", "end"],
+      "properties": {
+        "submit": {"const": "0"},
+        "headers": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uint64Decimal"}, {"type": "null"}]},
+        "first_byte": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uint64Decimal"}, {"type": "null"}]},
+        "first_thinking": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uint64Decimal"}, {"type": "null"}]},
+        "first_content": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uint64Decimal"}, {"type": "null"}]},
+        "end": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint64Decimal"}
+      }
+    },
+    "http_status": {"anyOf": [{"type": "integer", "minimum": 100, "maximum": 599}, {"type": "null"}]},
+    "terminal_status": {"enum": ["completed", "cancelled", "failed", "incomplete"]},
+    "done_reason": {"anyOf": [{"enum": ["stop", "length", "load", "unload", "error"]}, {"type": "null"}]},
+    "safe_error_category": {"anyOf": [{"enum": ["cancelled", "deadline", "connection", "http_error", "runtime_error", "malformed_stream", "incomplete_stream", "limit_exceeded", "identity_unverified"]}, {"type": "null"}]},
+    "metrics": {
+      "type": "object", "additionalProperties": false,
+      "required": ["request.client.first_byte_ms", "request.client.first_content_ms", "request.client.total_ms", "request.runtime.total_duration_ms", "request.runtime.load_duration_ms", "request.runtime.prompt_eval_duration_ms", "request.runtime.eval_duration_ms", "request.runtime.prompt_tokens", "request.runtime.output_tokens"],
+      "properties": {
+        "request.client.first_byte_ms": {"$ref": "#/$defs/nullableDuration"},
+        "request.client.first_content_ms": {"$ref": "#/$defs/nullableDuration"},
+        "request.client.total_ms": {"$ref": "#/$defs/nullableDuration"},
+        "request.runtime.total_duration_ms": {"$ref": "#/$defs/nullableDuration"},
+        "request.runtime.load_duration_ms": {"$ref": "#/$defs/nullableDuration"},
+        "request.runtime.prompt_eval_duration_ms": {"$ref": "#/$defs/nullableDuration"},
+        "request.runtime.eval_duration_ms": {"$ref": "#/$defs/nullableDuration"},
+        "request.runtime.prompt_tokens": {"$ref": "#/$defs/nullableCount"},
+        "request.runtime.output_tokens": {"$ref": "#/$defs/nullableCount"}
+      }
+    },
+    "field_provenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["request.client.first_byte_ms", "request.client.first_content_ms", "request.client.total_ms", "request.runtime.total_duration_ms", "request.runtime.load_duration_ms", "request.runtime.prompt_eval_duration_ms", "request.runtime.eval_duration_ms", "request.runtime.prompt_tokens", "request.runtime.output_tokens"],
+      "properties": {
+        "request.client.first_byte_ms": {"$ref": "#/$defs/fieldProvenance"},
+        "request.client.first_content_ms": {"$ref": "#/$defs/fieldProvenance"},
+        "request.client.total_ms": {"$ref": "#/$defs/fieldProvenance"},
+        "request.runtime.total_duration_ms": {"$ref": "#/$defs/fieldProvenance"},
+        "request.runtime.load_duration_ms": {"$ref": "#/$defs/fieldProvenance"},
+        "request.runtime.prompt_eval_duration_ms": {"$ref": "#/$defs/fieldProvenance"},
+        "request.runtime.eval_duration_ms": {"$ref": "#/$defs/fieldProvenance"},
+        "request.runtime.prompt_tokens": {"$ref": "#/$defs/fieldProvenance"},
+        "request.runtime.output_tokens": {"$ref": "#/$defs/fieldProvenance"}
+      }
+    },
+    "content_persistence": {"const": "none"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"source_kind": {"const": "deliberate_probe"}}},
+      "then": {"properties": {"verification_state": {"const": "direct_capture"}}}
+    },
+    {
+      "if": {"properties": {"source_kind": {"const": "imported_test"}}},
+      "then": {"properties": {"verification_state": {"const": "operator_imported_unverified"}, "runtime_source_pin_id": {"const": "operator-import-unverified"}}}
+    },
+    {
+      "if": {"properties": {"terminal_status": {"const": "completed"}}},
+      "then": {
+        "properties": {
+          "terminal_record_observed": {"const": true},
+          "http_status": {"type": "integer", "minimum": 200, "maximum": 299},
+          "done_reason": {"enum": ["stop", "length"]},
+          "safe_error_category": {"const": null},
+          "metrics": {"properties": {"request.client.total_ms": {"type": "number", "minimum": 0, "maximum": 120000}}}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"done_reason": {"enum": ["load", "unload", "error"]}}},
+      "then": {"properties": {"terminal_status": {"enum": ["cancelled", "failed", "incomplete"]}}}
+    },
+    {
+      "if": {"properties": {"terminal_record_observed": {"const": false}}},
+      "then": {
+        "properties": {
+          "done_reason": {"const": null},
+          "metrics": {
+            "properties": {
+              "request.runtime.total_duration_ms": {"const": null},
+              "request.runtime.load_duration_ms": {"const": null},
+              "request.runtime.prompt_eval_duration_ms": {"const": null},
+              "request.runtime.eval_duration_ms": {"const": null},
+              "request.runtime.prompt_tokens": {"const": null},
+              "request.runtime.output_tokens": {"const": null}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"metrics": {"properties": {"request.client.first_byte_ms": {"type": "number"}}}}},
+      "then": {"properties": {"offsets_ns": {"properties": {"first_byte": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint64Decimal"}}}}}
+    },
+    {
+      "if": {"properties": {"metrics": {"properties": {"request.client.first_content_ms": {"type": "number"}}}}},
+      "then": {"properties": {"offsets_ns": {"properties": {"first_content": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint64Decimal"}}}}}
+    }
+  ],
+  "$defs": {
+    "nullableDuration": {"anyOf": [{"type": "number", "minimum": 0, "maximum": 120000}, {"type": "null"}]},
+    "nullableCount": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 1000000}, {"type": "null"}]},
+    "fieldProvenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source", "verification", "missing_reason"],
+      "properties": {
+        "source": {"enum": ["client_monotonic", "ollama_terminal", "operator_import"]},
+        "verification": {"enum": ["direct_capture", "operator_imported_unverified"]},
+        "missing_reason": {"anyOf": [{"enum": ["field_omitted", "not_reached", "cancelled", "failed", "incomplete", "not_applicable"]}, {"type": "null"}]}
+      }
+    }
+  }
+}
