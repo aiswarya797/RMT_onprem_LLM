@@ -1,0 +1,883 @@
+{
+  "schema_version": "1.0",
+  "registry_revision": "mac-ollama-1",
+  "certification_state": "unverified",
+  "source_pins": [
+    {
+      "id": "ollama-0.34.0-source",
+      "role": "primary_current_semantic_source",
+      "version": "0.34.0",
+      "commit": "d8ab4b4f0ca24b51d3a46b3bf4f462e58ce66b1f",
+      "execution": "source_inspection_only",
+      "compatibility": "unverified_until_runtime_capture",
+      "files": [
+        {
+          "path": "api/types.go",
+          "sha256": "40c2647781a54fd3baedca021d495f3f7f899e217fce9697405e90b7930b9d8e"
+        },
+        {
+          "path": "server/routes.go",
+          "sha256": "99d48da007feaa85321ad24b25bff4d881c5bf329a5019aec642defe95396b73"
+        }
+      ]
+    },
+    {
+      "id": "ollama-0.12.10-source",
+      "role": "historical_observed_version_semantic_source",
+      "version": "0.12.10",
+      "commit": "80d34260ea16e76c9ef0d014a86cc130421855f1",
+      "execution": "source_inspection_only",
+      "compatibility": "unverified_observed_installation",
+      "files": [
+        {
+          "path": "api/types.go",
+          "sha256": "572ab419a1710d60604aa8a1585d4756ef07692dad6fd1b6365df4913ddd1f61"
+        },
+        {
+          "path": "server/routes.go",
+          "sha256": "6e39ff9a27c39d3b0f25f89e13f9ff024339fe7e76769881ce75b49b22630753"
+        }
+      ]
+    },
+    {
+      "id": "xnu-11417.121.6-source",
+      "role": "darwin_pressure_semantic_source",
+      "version": "xnu-11417.121.6",
+      "commit": "a1e26a70f38d1d7daa7b49b258e2f8538ad81650",
+      "execution": "source_inspection_plus_observation_helper",
+      "compatibility": "unverified_until_rmt_t16_t24",
+      "files": [
+        {
+          "path": "bsd/kern/kern_memorystatus_notify.c",
+          "sha256": "552451e0067fd7ee3b70242f53bc87b87566cfdca72f2c66d1f97895668f38e8"
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "id": "host.cpu.busy_ratio",
+      "unit": "ratio",
+      "kind": "gauge",
+      "value_contract": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "enum": null,
+        "wire_encoding": "json_number"
+      },
+      "population": "host logical-core aggregate over collection interval",
+      "source_method": "host_statistics HOST_CPU_LOAD_INFO aggregate busy tick delta divided by aggregate total tick delta; no additional logical-core division",
+      "method_revision": "darwin-host-cpu-candidate-1",
+      "support": "unverified",
+      "quality": "measured",
+      "zero_meaning": "idle interval",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "fresh compatible interval integration only",
+      "labels": {
+        "required": [
+          "host_id"
+        ],
+        "optional": []
+      },
+      "source_pin_id": null,
+      "certification_gate": "exact_os_build_rmt_capture_t16_t24"
+    },
+    {
+      "id": "host.memory.pressure_level",
+      "unit": "state",
+      "kind": "gauge",
+      "value_contract": {
+        "type": "enum",
+        "minimum": null,
+        "maximum": null,
+        "enum": [
+          "normal",
+          "warning",
+          "critical"
+        ],
+        "wire_encoding": "json_string"
+      },
+      "population": "host at observation",
+      "source_method": "sysctl kern.memorystatus_vm_pressure_level raw flags 1/2/4",
+      "method_revision": "xnu-11417.121.6-pressure-flags",
+      "support": "unverified",
+      "quality": "measured",
+      "zero_meaning": "not a numeric metric; raw zero is unavailable",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "consecutive fresh state dwell only",
+      "labels": {
+        "required": [
+          "host_id"
+        ],
+        "optional": []
+      },
+      "source_pin_id": "xnu-11417.121.6-source",
+      "certification_gate": "exact_os_build_rmt_capture_t16_t24"
+    },
+    {
+      "id": "host.memory.compressed_bytes",
+      "unit": "bytes",
+      "kind": "gauge",
+      "value_contract": {
+        "type": "uint64",
+        "minimum": 0,
+        "maximum": null,
+        "enum": null,
+        "wire_encoding": "decimal_string"
+      },
+      "population": "host instantaneous",
+      "source_method": "HOST_VM_INFO64 compressor_page_count times certified page size; physical compressor storage, not total_uncompressed_pages_in_compressor",
+      "method_revision": "darwin-vm-candidate-1",
+      "support": "unverified",
+      "quality": "measured",
+      "zero_meaning": "no compressed pages",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "fresh compatible interval integration and actual min/max",
+      "labels": {
+        "required": [
+          "host_id"
+        ],
+        "optional": []
+      },
+      "source_pin_id": null,
+      "certification_gate": "exact_os_build_rmt_capture_t16_t24"
+    },
+    {
+      "id": "host.memory.swap_used_bytes",
+      "unit": "bytes",
+      "kind": "gauge",
+      "value_contract": {
+        "type": "uint64",
+        "minimum": 0,
+        "maximum": null,
+        "enum": null,
+        "wire_encoding": "decimal_string"
+      },
+      "population": "host instantaneous",
+      "source_method": "sysctl vm.swapusage xsw_used",
+      "method_revision": "darwin-swap-candidate-1",
+      "support": "unverified",
+      "quality": "measured",
+      "zero_meaning": "no swap currently used",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "fresh compatible interval integration and actual min/max",
+      "labels": {
+        "required": [
+          "host_id"
+        ],
+        "optional": []
+      },
+      "source_pin_id": null,
+      "certification_gate": "exact_os_build_rmt_capture_t16_t24"
+    },
+    {
+      "id": "host.disk.free_bytes",
+      "unit": "bytes",
+      "kind": "gauge",
+      "value_contract": {
+        "type": "uint64",
+        "minimum": 0,
+        "maximum": null,
+        "enum": null,
+        "wire_encoding": "decimal_string"
+      },
+      "population": "configured RMT local data volume instantaneous",
+      "source_method": "statfs f_bavail times f_bsize with overflow check",
+      "method_revision": "darwin-statfs-candidate-1",
+      "support": "unverified",
+      "quality": "measured",
+      "zero_meaning": "configured volume full",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "fresh compatible interval integration and actual min/max",
+      "labels": {
+        "required": [
+          "host_id"
+        ],
+        "optional": []
+      },
+      "source_pin_id": null,
+      "certification_gate": "exact_os_build_rmt_capture_t16_t24"
+    },
+    {
+      "id": "host.network.received_bytes_total",
+      "unit": "bytes",
+      "kind": "cumulative_counter",
+      "value_contract": {
+        "type": "uint64",
+        "minimum": 0,
+        "maximum": null,
+        "enum": null,
+        "wire_encoding": "decimal_string"
+      },
+      "population": "host admitted interface plus boot and counter epoch",
+      "source_method": "bounded NET_RT_IFLIST2 sysctl if_msghdr2.ifm_data64.ifi_ibytes uint64",
+      "method_revision": "darwin-net-rt-iflist2-ifdata64-candidate-1",
+      "support": "unverified",
+      "quality": "measured",
+      "zero_meaning": "no admitted received bytes in epoch",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "delta only within identical boot interface and counter epoch",
+      "labels": {
+        "required": [
+          "host_id",
+          "interface_id",
+          "boot_id",
+          "counter_epoch_id"
+        ],
+        "optional": [
+          "loopback"
+        ]
+      },
+      "source_pin_id": null,
+      "certification_gate": "exact_os_build_rmt_capture_t16_t24"
+    },
+    {
+      "id": "host.network.sent_bytes_total",
+      "unit": "bytes",
+      "kind": "cumulative_counter",
+      "value_contract": {
+        "type": "uint64",
+        "minimum": 0,
+        "maximum": null,
+        "enum": null,
+        "wire_encoding": "decimal_string"
+      },
+      "population": "host admitted interface plus boot and counter epoch",
+      "source_method": "bounded NET_RT_IFLIST2 sysctl if_msghdr2.ifm_data64.ifi_obytes uint64",
+      "method_revision": "darwin-net-rt-iflist2-ifdata64-candidate-1",
+      "support": "unverified",
+      "quality": "measured",
+      "zero_meaning": "no admitted sent bytes in epoch",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "delta only within identical boot interface and counter epoch",
+      "labels": {
+        "required": [
+          "host_id",
+          "interface_id",
+          "boot_id",
+          "counter_epoch_id"
+        ],
+        "optional": [
+          "loopback"
+        ]
+      },
+      "source_pin_id": null,
+      "certification_gate": "exact_os_build_rmt_capture_t16_t24"
+    },
+    {
+      "id": "process.cpu.busy_ratio",
+      "unit": "ratio",
+      "kind": "gauge",
+      "value_contract": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "enum": null,
+        "wire_encoding": "json_number"
+      },
+      "population": "bounded observable same-user process incarnation over interval",
+      "source_method": "RUSAGE_INFO_V4 user plus system time deltas divided by elapsed and logical CPU count",
+      "method_revision": "darwin-proc-rusage-candidate-1",
+      "support": "unverified",
+      "quality": "measured",
+      "zero_meaning": "process idle during interval",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "per process-start identity; no causal attribution",
+      "labels": {
+        "required": [
+          "host_id",
+          "boot_id",
+          "process_start_identity"
+        ],
+        "optional": [
+          "target_id",
+          "association_quality",
+          "executable_basename"
+        ]
+      },
+      "source_pin_id": null,
+      "certification_gate": "exact_os_build_rmt_capture_t16_t24"
+    },
+    {
+      "id": "process.physical_footprint_bytes",
+      "unit": "bytes",
+      "kind": "gauge",
+      "value_contract": {
+        "type": "uint64",
+        "minimum": 0,
+        "maximum": null,
+        "enum": null,
+        "wire_encoding": "decimal_string"
+      },
+      "population": "bounded observable same-user process incarnation instantaneous",
+      "source_method": "RUSAGE_INFO_V4 ri_phys_footprint bound to BSD and absolute start identity",
+      "method_revision": "darwin-proc-footprint-candidate-1",
+      "support": "unverified",
+      "quality": "measured",
+      "zero_meaning": "explicit zero footprint",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "per process-start identity; actual observations only",
+      "labels": {
+        "required": [
+          "host_id",
+          "boot_id",
+          "process_start_identity"
+        ],
+        "optional": [
+          "target_id",
+          "association_quality",
+          "executable_basename"
+        ]
+      },
+      "source_pin_id": null,
+      "certification_gate": "exact_os_build_rmt_capture_t16_t24"
+    },
+    {
+      "id": "runtime.reachable",
+      "unit": "boolean",
+      "kind": "gauge",
+      "value_contract": {
+        "type": "boolean",
+        "minimum": null,
+        "maximum": null,
+        "enum": null,
+        "wire_encoding": "json_boolean"
+      },
+      "population": "configured Ollama target per bounded check",
+      "source_method": "bounded Ollama root or api/version response",
+      "method_revision": "ollama-0.34.0-bounded-read-v1",
+      "support": "unverified",
+      "quality": "runtime_reported",
+      "zero_meaning": "false is a valid failed bounded check",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "state episodes; does not imply model or generation state",
+      "labels": {
+        "required": [
+          "host_id",
+          "target_id"
+        ],
+        "optional": [
+          "process_start_identity"
+        ]
+      },
+      "source_pin_id": "ollama-0.34.0-source",
+      "certification_gate": "exact_ollama_0_34_0_runtime_capture_t24"
+    },
+    {
+      "id": "runtime.model.loaded",
+      "unit": "boolean",
+      "kind": "gauge",
+      "value_contract": {
+        "type": "boolean",
+        "minimum": null,
+        "maximum": null,
+        "enum": null,
+        "wire_encoding": "json_boolean"
+      },
+      "population": "target plus model digest at complete api/ps observation",
+      "source_method": "bounded Ollama api/ps membership by digest",
+      "method_revision": "ollama-0.34.0-bounded-ps-v1",
+      "support": "unverified",
+      "quality": "runtime_reported",
+      "zero_meaning": "false means absent from a successful complete inventory",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "state by target and digest; inventory failure is unavailable",
+      "labels": {
+        "required": [
+          "host_id",
+          "target_id",
+          "model_digest"
+        ],
+        "optional": [
+          "model_alias",
+          "process_start_identity"
+        ]
+      },
+      "source_pin_id": "ollama-0.34.0-source",
+      "certification_gate": "exact_ollama_0_34_0_runtime_capture_t24"
+    },
+    {
+      "id": "runtime.model.reported_size_bytes",
+      "unit": "bytes",
+      "kind": "gauge",
+      "value_contract": {
+        "type": "uint64",
+        "minimum": 0,
+        "maximum": null,
+        "enum": null,
+        "wire_encoding": "decimal_string"
+      },
+      "population": "target plus model digest at api/ps observation",
+      "source_method": "Ollama api/ps size",
+      "method_revision": "ollama-0.34.0-bounded-ps-v1",
+      "support": "unverified",
+      "quality": "runtime_reported",
+      "zero_meaning": "runtime explicitly reported zero",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "actual samples by target and digest",
+      "labels": {
+        "required": [
+          "host_id",
+          "target_id",
+          "model_digest"
+        ],
+        "optional": [
+          "model_alias",
+          "process_start_identity"
+        ]
+      },
+      "source_pin_id": "ollama-0.34.0-source",
+      "certification_gate": "exact_ollama_0_34_0_runtime_capture_t24"
+    },
+    {
+      "id": "runtime.model.reported_size_vram_bytes",
+      "unit": "bytes",
+      "kind": "gauge",
+      "value_contract": {
+        "type": "uint64",
+        "minimum": 0,
+        "maximum": null,
+        "enum": null,
+        "wire_encoding": "decimal_string"
+      },
+      "population": "target plus model digest at api/ps observation",
+      "source_method": "Ollama api/ps size_vram unified-memory placement/allocation",
+      "method_revision": "ollama-0.34.0-bounded-ps-v1",
+      "support": "unverified",
+      "quality": "runtime_reported",
+      "zero_meaning": "runtime explicitly reported zero",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "runtime reported value only; never dedicated VRAM or footprint",
+      "labels": {
+        "required": [
+          "host_id",
+          "target_id",
+          "model_digest"
+        ],
+        "optional": [
+          "model_alias",
+          "process_start_identity"
+        ]
+      },
+      "source_pin_id": "ollama-0.34.0-source",
+      "certification_gate": "exact_ollama_0_34_0_runtime_capture_t24"
+    },
+    {
+      "id": "request.client.first_byte_ms",
+      "unit": "milliseconds",
+      "kind": "request_sample",
+      "value_contract": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 120000,
+        "enum": null,
+        "wire_encoding": "json_number"
+      },
+      "population": "explicit observed request sample",
+      "source_method": "client monotonic submit to first response byte",
+      "method_revision": "probe-monotonic-v1",
+      "support": "unverified",
+      "quality": "measured",
+      "zero_meaning": "first byte at submit boundary",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "completed exact population summaries; nullable when not reached",
+      "labels": {
+        "required": [
+          "target_id",
+          "model_digest",
+          "runtime_version",
+          "runtime_build",
+          "config_revision",
+          "profile_id",
+          "profile_sha256",
+          "options",
+          "concurrency",
+          "vantage_id",
+          "clock_method",
+          "source_kind",
+          "verification_state"
+        ],
+        "optional": []
+      },
+      "source_pin_id": "ollama-0.34.0-source",
+      "certification_gate": "t12_then_exact_client_runtime_capture_t24"
+    },
+    {
+      "id": "request.client.first_content_ms",
+      "unit": "milliseconds",
+      "kind": "request_sample",
+      "value_contract": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 120000,
+        "enum": null,
+        "wire_encoding": "json_number"
+      },
+      "population": "explicit observed request sample",
+      "source_method": "client monotonic submit to first nonempty answer content",
+      "method_revision": "probe-monotonic-v1",
+      "support": "unverified",
+      "quality": "measured",
+      "zero_meaning": "first content at submit boundary",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "completed exact population summaries; nullable when no content",
+      "labels": {
+        "required": [
+          "target_id",
+          "model_digest",
+          "runtime_version",
+          "runtime_build",
+          "config_revision",
+          "profile_id",
+          "profile_sha256",
+          "options",
+          "concurrency",
+          "vantage_id",
+          "clock_method",
+          "source_kind",
+          "verification_state"
+        ],
+        "optional": []
+      },
+      "source_pin_id": "ollama-0.34.0-source",
+      "certification_gate": "t12_then_exact_client_runtime_capture_t24"
+    },
+    {
+      "id": "request.client.total_ms",
+      "unit": "milliseconds",
+      "kind": "request_sample",
+      "value_contract": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 120000,
+        "enum": null,
+        "wire_encoding": "json_number"
+      },
+      "population": "explicit observed request sample",
+      "source_method": "client monotonic submit to terminal boundary",
+      "method_revision": "probe-monotonic-v1",
+      "support": "unverified",
+      "quality": "measured",
+      "zero_meaning": "terminal boundary at submit",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "completed exact population summaries only",
+      "labels": {
+        "required": [
+          "target_id",
+          "model_digest",
+          "runtime_version",
+          "runtime_build",
+          "config_revision",
+          "profile_id",
+          "profile_sha256",
+          "options",
+          "concurrency",
+          "vantage_id",
+          "clock_method",
+          "source_kind",
+          "verification_state"
+        ],
+        "optional": []
+      },
+      "source_pin_id": "ollama-0.34.0-source",
+      "certification_gate": "t12_then_exact_client_runtime_capture_t24"
+    },
+    {
+      "id": "request.runtime.total_duration_ms",
+      "unit": "milliseconds",
+      "kind": "request_sample",
+      "value_contract": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 120000,
+        "enum": null,
+        "wire_encoding": "json_number"
+      },
+      "population": "explicit observed request terminal record",
+      "source_method": "Ollama final total_duration nanoseconds converted once",
+      "method_revision": "ollama-0.34.0-final-duration-ns-v1",
+      "support": "unverified",
+      "quality": "runtime_reported",
+      "zero_meaning": "runtime explicitly reported zero duration",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "completed exact population summaries; omitted is null",
+      "labels": {
+        "required": [
+          "target_id",
+          "model_digest",
+          "runtime_version",
+          "runtime_build",
+          "config_revision",
+          "profile_id",
+          "profile_sha256",
+          "options",
+          "concurrency",
+          "vantage_id",
+          "clock_method",
+          "source_kind",
+          "verification_state"
+        ],
+        "optional": []
+      },
+      "source_pin_id": "ollama-0.34.0-source",
+      "certification_gate": "exact_ollama_0_34_0_runtime_capture_t24"
+    },
+    {
+      "id": "request.runtime.load_duration_ms",
+      "unit": "milliseconds",
+      "kind": "request_sample",
+      "value_contract": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 120000,
+        "enum": null,
+        "wire_encoding": "json_number"
+      },
+      "population": "explicit observed request terminal record",
+      "source_method": "Ollama final load_duration nanoseconds converted once",
+      "method_revision": "ollama-0.34.0-final-duration-ns-v1",
+      "support": "unverified",
+      "quality": "runtime_reported",
+      "zero_meaning": "runtime explicitly reported zero load duration",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "completed exact population summaries; request scoped",
+      "labels": {
+        "required": [
+          "target_id",
+          "model_digest",
+          "runtime_version",
+          "runtime_build",
+          "config_revision",
+          "profile_id",
+          "profile_sha256",
+          "options",
+          "concurrency",
+          "vantage_id",
+          "clock_method",
+          "source_kind",
+          "verification_state"
+        ],
+        "optional": []
+      },
+      "source_pin_id": "ollama-0.34.0-source",
+      "certification_gate": "exact_ollama_0_34_0_runtime_capture_t24"
+    },
+    {
+      "id": "request.runtime.prompt_eval_duration_ms",
+      "unit": "milliseconds",
+      "kind": "request_sample",
+      "value_contract": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 120000,
+        "enum": null,
+        "wire_encoding": "json_number"
+      },
+      "population": "explicit observed request terminal record",
+      "source_method": "Ollama final prompt_eval_duration nanoseconds converted once",
+      "method_revision": "ollama-0.34.0-final-duration-ns-v1",
+      "support": "unverified",
+      "quality": "runtime_reported",
+      "zero_meaning": "runtime explicitly reported zero prompt duration",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "completed exact population summaries; omitted is null",
+      "labels": {
+        "required": [
+          "target_id",
+          "model_digest",
+          "runtime_version",
+          "runtime_build",
+          "config_revision",
+          "profile_id",
+          "profile_sha256",
+          "options",
+          "concurrency",
+          "vantage_id",
+          "clock_method",
+          "source_kind",
+          "verification_state"
+        ],
+        "optional": []
+      },
+      "source_pin_id": "ollama-0.34.0-source",
+      "certification_gate": "exact_ollama_0_34_0_runtime_capture_t24"
+    },
+    {
+      "id": "request.runtime.eval_duration_ms",
+      "unit": "milliseconds",
+      "kind": "request_sample",
+      "value_contract": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 120000,
+        "enum": null,
+        "wire_encoding": "json_number"
+      },
+      "population": "explicit observed request terminal record",
+      "source_method": "Ollama final eval_duration nanoseconds converted once",
+      "method_revision": "ollama-0.34.0-final-duration-ns-v1",
+      "support": "unverified",
+      "quality": "runtime_reported",
+      "zero_meaning": "runtime explicitly reported zero eval duration",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "completed exact population summaries; omitted is null",
+      "labels": {
+        "required": [
+          "target_id",
+          "model_digest",
+          "runtime_version",
+          "runtime_build",
+          "config_revision",
+          "profile_id",
+          "profile_sha256",
+          "options",
+          "concurrency",
+          "vantage_id",
+          "clock_method",
+          "source_kind",
+          "verification_state"
+        ],
+        "optional": []
+      },
+      "source_pin_id": "ollama-0.34.0-source",
+      "certification_gate": "exact_ollama_0_34_0_runtime_capture_t24"
+    },
+    {
+      "id": "request.runtime.prompt_tokens",
+      "unit": "tokens",
+      "kind": "request_sample",
+      "value_contract": {
+        "type": "uint64",
+        "minimum": 0,
+        "maximum": 1000000,
+        "enum": null,
+        "wire_encoding": "json_number"
+      },
+      "population": "explicit observed request terminal record",
+      "source_method": "Ollama final prompt_eval_count",
+      "method_revision": "ollama-0.34.0-final-count-v1",
+      "support": "unverified",
+      "quality": "runtime_reported",
+      "zero_meaning": "runtime explicitly reported zero prompt tokens",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "completed exact population summaries; chunk count excluded",
+      "labels": {
+        "required": [
+          "target_id",
+          "model_digest",
+          "runtime_version",
+          "runtime_build",
+          "config_revision",
+          "profile_id",
+          "profile_sha256",
+          "options",
+          "concurrency",
+          "vantage_id",
+          "clock_method",
+          "source_kind",
+          "verification_state"
+        ],
+        "optional": []
+      },
+      "source_pin_id": "ollama-0.34.0-source",
+      "certification_gate": "exact_ollama_0_34_0_runtime_capture_t24"
+    },
+    {
+      "id": "request.runtime.output_tokens",
+      "unit": "tokens",
+      "kind": "request_sample",
+      "value_contract": {
+        "type": "uint64",
+        "minimum": 0,
+        "maximum": 1000000,
+        "enum": null,
+        "wire_encoding": "json_number"
+      },
+      "population": "explicit observed request terminal record",
+      "source_method": "Ollama final eval_count",
+      "method_revision": "ollama-0.34.0-final-count-v1",
+      "support": "unverified",
+      "quality": "runtime_reported",
+      "zero_meaning": "runtime explicitly reported zero output tokens",
+      "missing_semantics": "omit_or_null_with_reason_never_zero_fill",
+      "aggregation": "completed exact population summaries; chunk count excluded",
+      "labels": {
+        "required": [
+          "target_id",
+          "model_digest",
+          "runtime_version",
+          "runtime_build",
+          "config_revision",
+          "profile_id",
+          "profile_sha256",
+          "options",
+          "concurrency",
+          "vantage_id",
+          "clock_method",
+          "source_kind",
+          "verification_state"
+        ],
+        "optional": []
+      },
+      "source_pin_id": "ollama-0.34.0-source",
+      "certification_gate": "exact_ollama_0_34_0_runtime_capture_t24"
+    }
+  ],
+  "unavailable_capabilities": [
+    {
+      "id": "gpu.busy_ratio",
+      "support": "unavailable",
+      "reason": "unsupported_platform_contract",
+      "numeric_value": null
+    },
+    {
+      "id": "gpu.power_watts",
+      "support": "unavailable",
+      "reason": "unsupported_platform_contract",
+      "numeric_value": null
+    },
+    {
+      "id": "gpu.temperature_celsius",
+      "support": "unavailable",
+      "reason": "unsupported_platform_contract",
+      "numeric_value": null
+    },
+    {
+      "id": "gpu.process_memory_bytes",
+      "support": "unavailable",
+      "reason": "unsupported_platform_contract",
+      "numeric_value": null
+    },
+    {
+      "id": "runtime.queue_depth",
+      "support": "unavailable",
+      "reason": "unsupported_platform_contract",
+      "numeric_value": null
+    },
+    {
+      "id": "runtime.active_requests",
+      "support": "unavailable",
+      "reason": "unsupported_platform_contract",
+      "numeric_value": null
+    },
+    {
+      "id": "runtime.cache_hit_ratio",
+      "support": "unavailable",
+      "reason": "unsupported_platform_contract",
+      "numeric_value": null
+    },
+    {
+      "id": "request.passive.first_byte_ms",
+      "support": "unavailable",
+      "reason": "unsupported_platform_contract",
+      "numeric_value": null
+    },
+    {
+      "id": "request.passive.total_ms",
+      "support": "unavailable",
+      "reason": "unsupported_platform_contract",
+      "numeric_value": null
+    }
+  ]
+}

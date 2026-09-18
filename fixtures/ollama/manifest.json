@@ -1,0 +1,25 @@
+{
+  "schema_version": "rmt-ollama-fixtures/1",
+  "synthetic": true,
+  "runtime_capture": false,
+  "hardware_capture": false,
+  "purpose": "Bounded read-only adapter and content-discard contract tests",
+  "source_inspection": {
+    "version": "0.34.0",
+    "commit": "d8ab4b4f0ca24b51d3a46b3bf4f462e58ce66b1f",
+    "api_types_sha256": "40c2647781a54fd3baedca021d495f3f7f899e217fce9697405e90b7930b9d8e",
+    "server_routes_sha256": "99d48da007feaa85321ad24b25bff4d881c5bf329a5019aec642defe95396b73",
+    "qualification": "source_inspected_runtime_unverified"
+  },
+  "files": {
+    "version-0.34.0.json": "Synthetic /api/version response",
+    "ps-loaded.json": "Synthetic /api/ps response with one loaded model",
+    "tags.json": "Synthetic /api/tags response with the same digest",
+    "show.json": "Synthetic /api/show response containing discard canaries",
+    "stream-stop.ndjson": "Synthetic terminal stop stream with omitted and present-zero distinctions",
+    "stream-missing-terminal.ndjson": "Synthetic unfinished stream",
+    "stream-http200-error.ndjson": "Synthetic error object after HTTP 200",
+    "stream-duplicate-key.ndjson": "Synthetic duplicate-key rejection case",
+    "stream-post-terminal.ndjson": "Synthetic post-terminal rejection case"
+  }
+}

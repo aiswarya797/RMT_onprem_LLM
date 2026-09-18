@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "sqlite_version": "3.53.4",
+  "sqlite_source_id": "2026-07-24 19:02:57 bf7c7f30031888f4e796e429ab3978879485813aaca6f641c7b33e4e09459bcc",
+  "page_size": 4096,
+  "fixed_reservation_bytes": 262144,
+  "per_frame_reservation_bytes": 4096,
+  "included_tables": [
+    "recovery_grants",
+    "recovery_grant_tombstones",
+    "recovery_grant_receipts",
+    "idempotency_receipts",
+    "audit"
+  ],
+  "samples": [
+    {
+      "frame_count": 1,
+      "frames_per_request": 1,
+      "observed_delta_bytes": 0,
+      "reservation_bytes": 266240,
+      "calibrated": true
+    },
+    {
+      "frame_count": 64,
+      "frames_per_request": 1,
+      "observed_delta_bytes": 69632,
+      "reservation_bytes": 524288,
+      "calibrated": true
+    },
+    {
+      "frame_count": 128,
+      "frames_per_request": 1,
+      "observed_delta_bytes": 155648,
+      "reservation_bytes": 786432,
+      "calibrated": true
+    },
+    {
+      "frame_count": 64,
+      "frames_per_request": 4,
+      "observed_delta_bytes": 45056,
+      "reservation_bytes": 524288,
+      "calibrated": true
+    }
+  ]
+}

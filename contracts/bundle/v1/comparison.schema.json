@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/bundle/v1/comparison.schema.json",
+  "title": "Frozen comparison evidence v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "comparison_id", "comparison", "input_sha256"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "comparison_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "comparison": {"$ref": "../../api/v1/comparison.schema.json"},
+    "input_sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}
+  }
+}

@@ -1,0 +1,11 @@
+SQLite 3.53.4 (bundled by github.com/mattn/go-sqlite3 v1.14.52)
+
+SQLite source ID:
+2026-07-24 19:02:57 bf7c7f30031888f4e796e429ab3978879485813aaca6f641c7b33e4e09459bcc
+
+SQLite's authors have dedicated the deliverable code and documentation to the
+public domain. The official public-domain notice is available at:
+https://www.sqlite.org/copyright.html
+
+The official release record and source ID are available at:
+https://sqlite.org/releaselog/3_53_4.html

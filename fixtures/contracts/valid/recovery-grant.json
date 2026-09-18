@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "grant_id": "a0000000-0000-4000-8000-000000000001",
+  "deployment_id": "00000000-0000-4000-8000-000000000001",
+  "host_id": "00000000-0000-4000-8000-000000000002",
+  "current_security_generation": "a0000000-0000-4000-8000-000000000002",
+  "original_security_generation": "77777777-7777-4777-8777-777777777777",
+  "original_collector_boot_id": "11111111-1111-4111-8111-111111111111",
+  "manifest_sha256": "d72f80e4a49edd9a08a88204f064b8ad264501b42b5b5c9971e8abb0049c9679",
+  "approved_segments": [
+    {
+      "source_id": "33333333-3333-4333-8333-333333333333",
+      "from_sequence": 42,
+      "to_sequence": 42,
+      "segment_sha256": "14239cadfab27ad28cf3735c8a032321cbec105082833e6c5d20a5c99a72c5fb"
+    }
+  ],
+  "max_bytes": 1024,
+  "max_frames": 1,
+  "issued_ms": 1789473600020,
+  "expires_ms": 1789477200020,
+  "grant_sha256": "658d9e06be5a175228ddea952cfb63b408a75bd321e573a2d1549ddd3f66af36"
+}

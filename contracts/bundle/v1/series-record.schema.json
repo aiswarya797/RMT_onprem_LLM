@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://llm-monitor.local/contracts/bundle/v1/series-record.schema.json",
+  "title": "One content-free series.ndjson record v1", "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "source_id", "metric_id", "definition_revision", "observed_ms", "aligned_ms", "uncertainty_ms", "quality", "value", "missing_reason", "provenance"],
+  "properties": {
+    "schema_version": {"const": "1.0"}, "source_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "metric_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/metricId"}, "definition_revision": {"const": "mac-ollama-1"},
+    "observed_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, "aligned_ms": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, {"type": "null"}]},
+    "uncertainty_ms": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 60000}, {"type": "null"}]},
+    "quality": {"$ref": "../../collector/v1/common.schema.json#/$defs/quality"},
+    "value": {"anyOf": [{"type": "number"}, {"type": "boolean"}, {"enum": ["normal", "warning", "critical"]}, {"$ref": "../../collector/v1/common.schema.json#/$defs/uint64Decimal"}, {"type": "null"}]},
+    "missing_reason": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/missingReason"}, {"type": "null"}]},
+    "provenance": {"$ref": "../../collector/v1/common.schema.json#/$defs/provenance"}
+  }
+}

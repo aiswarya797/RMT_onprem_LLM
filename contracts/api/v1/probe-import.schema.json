@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/api/v1/probe-import.schema.json",
+  "title": "Normalized operator-imported request run v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["original_artifact_sha256", "normalization_revision", "run"],
+  "properties": {
+    "original_artifact_sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"},
+    "normalization_revision": {"const": "probe-import-1"},
+    "run": {
+      "allOf": [
+        {"$ref": "../../probe/v1/request-run.schema.json"},
+        {
+          "properties": {
+            "source_kind": {"const": "imported_test"},
+            "verification_state": {"const": "operator_imported_unverified"},
+            "population_key": {"properties": {"source_kind": {"const": "imported_test"}, "verification_state": {"const": "operator_imported_unverified"}}},
+            "samples": {
+              "items": {
+                "properties": {
+                  "source_kind": {"const": "imported_test"},
+                  "verification_state": {"const": "operator_imported_unverified"},
+                  "runtime_source_pin_id": {"const": "operator-import-unverified"},
+                  "population_key": {"properties": {"source_kind": {"const": "imported_test"}, "verification_state": {"const": "operator_imported_unverified"}}},
+                  "field_provenance": {
+                    "patternProperties": {
+                      ".*": {"properties": {"source": {"const": "operator_import"}, "verification": {"const": "operator_imported_unverified"}}}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

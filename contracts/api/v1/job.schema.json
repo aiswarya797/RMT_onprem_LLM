@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/api/v1/job.schema.json",
+  "title": "Durable bounded job v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "job_id", "deployment_generation", "type", "state", "progress_ratio", "created_ms", "updated_ms", "result", "error", "cancel_state"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "job_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "deployment_generation": {"$ref": "../../collector/v1/common.schema.json#/$defs/epoch"},
+    "type": {"enum": ["connectivity_check", "comparison", "export_preview", "export_archive", "destination_test", "probe_import", "backup"]},
+    "state": {"enum": ["queued", "running", "succeeded", "failed", "cancelled"]},
+    "progress_ratio": {"type": "number", "minimum": 0, "maximum": 1},
+    "created_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+    "updated_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"},
+    "result": {"anyOf": [{"type": "object", "additionalProperties": false, "required": ["resource_id", "resource_type", "download_expires_ms"], "properties": {"resource_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}, "resource_type": {"enum": ["comparison", "export", "connectivity_report", "probe_run", "backup", "notification_delivery"]}, "download_expires_ms": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, {"type": "null"}]} }}, {"type": "null"}]},
+    "receiver_ack_ms": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, {"type": "null"}]},
+    "error": {"anyOf": [{"$ref": "error.schema.json"}, {"type": "null"}]},
+    "cancel_state": {"enum": ["not_requested", "requested", "cancelled", "too_late_result_committed"]}
+  }
+}

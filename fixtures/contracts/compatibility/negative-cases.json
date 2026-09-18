@@ -1,0 +1,54 @@
+{
+  "schema_version": "rmt-contract-fixture/1",
+  "fixture_id": "compatibility-negative-cases",
+  "synthetic": true,
+  "provenance": {
+    "source": "contract_fixture",
+    "runtime_capture": false,
+    "base_manifest": "contracts/compatibility/v1/macos-15.5-m1-ollama-0.34.0.unverified.json"
+  },
+  "cases": [
+    {
+      "id": "cannot-certify-without-rmt",
+      "mutation": {
+        "status": "certified"
+      },
+      "expected": "schema_reject"
+    },
+    {
+      "id": "cannot-mark-runtime-executed",
+      "mutation": {
+        "runtime.execution_status": "executed"
+      },
+      "expected": "schema_reject"
+    },
+    {
+      "id": "driver-not-applicable-not-empty-string",
+      "mutation": {
+        "platform_fields.gpu_driver.value": ""
+      },
+      "expected": "schema_reject"
+    },
+    {
+      "id": "natural-baseline-not-runtime-capture",
+      "mutation": {
+        "evidence[1].execution": "executed"
+      },
+      "expected": "schema_reject"
+    },
+    {
+      "id": "security-stays-pending",
+      "mutation": {
+        "security_review.status": "qualified"
+      },
+      "expected": "schema_reject"
+    },
+    {
+      "id": "cannot-claim-general-release-with-later-soak-pending",
+      "mutation": {
+        "qualification_stage": "general_release"
+      },
+      "expected": "schema_reject"
+    }
+  ]
+}

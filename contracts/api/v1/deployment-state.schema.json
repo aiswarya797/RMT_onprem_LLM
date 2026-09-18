@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/api/v1/deployment-state.schema.json",
+  "title": "Reviewed restore-generation state v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "deployment_id", "deployment_generation", "recovery_state", "recovery_point_ms", "mutations_allowed"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "deployment_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "deployment_generation": {"$ref": "../../collector/v1/common.schema.json#/$defs/epoch"},
+    "recovery_state": {"enum": ["normal", "maintenance_pre_activation", "restore_requires_bootstrap", "recovery_blocked"]},
+    "recovery_point_ms": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, {"type": "null"}]},
+    "mutations_allowed": {"type": "boolean"}
+  }
+}

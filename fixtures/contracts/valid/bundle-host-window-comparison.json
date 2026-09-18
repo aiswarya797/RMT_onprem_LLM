@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0",
+  "comparison_id": "00000000-0000-4000-8000-000000000005",
+  "comparison": {
+    "schema_version": "1.0",
+    "comparison_kind": "host_window",
+    "result_id": "00000000-0000-4000-8000-000000000005",
+    "persisted": true,
+    "status": "observed_change_similar_recorded_conditions",
+    "metric_id": "host.memory.pressure_level",
+    "host_id": "00000000-0000-4000-8000-000000000002",
+    "source_id": "00000000-0000-4000-8000-000000000003",
+    "definition_revision": "mac-ollama-1",
+    "method_revision": "darwin-vm-pressure-sysctl-1",
+    "resolution_tier": "raw",
+    "epoch_id": "00000000-0000-4000-8000-000000000004",
+    "clock_method": "single_host_monotonic_aligned",
+    "minimum_coverage_ratio": 0.9,
+    "before": {
+      "start_ms": 1000000,
+      "end_ms": 1300000,
+      "coverage_ratio": 0.9,
+      "sample_count": 270,
+      "aggregate_kind": "state_duration",
+      "minimum": null,
+      "median": null,
+      "maximum": null,
+      "rate_per_second": null,
+      "state_durations_ms": {
+        "normal": 0,
+        "warning": 270000,
+        "critical": 0
+      }
+    },
+    "after": {
+      "start_ms": 1300000,
+      "end_ms": 1600000,
+      "coverage_ratio": 0.9,
+      "sample_count": 270,
+      "aggregate_kind": "state_duration",
+      "minimum": null,
+      "median": null,
+      "maximum": null,
+      "rate_per_second": null,
+      "state_durations_ms": {
+        "normal": 270000,
+        "warning": 0,
+        "critical": 0
+      }
+    },
+    "confounds": [
+      "desktop_load_changed"
+    ],
+    "blocked_reasons": [],
+    "claim_scope": "host_observation_windows_no_causal_claim"
+  },
+  "input_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+}

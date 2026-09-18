@@ -1,0 +1,1836 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/api/v1/response.schema.json",
+  "title": "Typed API response values v1",
+  "$defs": {
+    "annotationList": {
+      "$ref": "incident-response.schema.json#/$defs/annotationList"
+    },
+    "empty": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 0
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 1000
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "bootstrapState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "state",
+        "expires_ms"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "state": {
+          "enum": [
+            "required",
+            "expired",
+            "configured"
+          ]
+        },
+        "expires_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "user",
+        "expires_ms",
+        "csrf_token"
+      ],
+      "properties": {
+        "user": {
+          "$ref": "#/$defs/user"
+        },
+        "expires_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "csrf_token": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 256
+        }
+      }
+    },
+    "foundationStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "generated_ms",
+        "deployment_state",
+        "hub_state",
+        "collector_state",
+        "target_state",
+        "host_count",
+        "target_count",
+        "source_count",
+        "collection_started",
+        "inference_started",
+        "storage_state"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "generated_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "deployment_state": {
+          "$ref": "deployment-state.schema.json"
+        },
+        "hub_state": {
+          "const": "configured"
+        },
+        "collector_state": {
+          "enum": [
+            "not_registered",
+            "registered_not_observed",
+            "observing",
+            "stale_or_disconnected"
+          ]
+        },
+        "target_state": {
+          "enum": [
+            "none",
+            "reachable",
+            "unreachable",
+            "partial_or_unknown"
+          ]
+        },
+        "host_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "target_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "source_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16
+        },
+        "collection_started": {
+          "type": "boolean"
+        },
+        "inference_started": {
+          "const": false
+        },
+        "storage_state": {
+          "enum": [
+            "normal",
+            "warning",
+            "optional_jobs_stopped",
+            "bulk_ingest_paused",
+            "read_only_enospc"
+          ]
+        },
+        "evaluator": {
+          "$ref": "#/$defs/evaluatorStatus"
+        },
+        "experimental_features": {
+          "type": "boolean",
+          "description": "False unless experimental workflows were explicitly enabled for this process. Omitted by older hubs; clients must default to false."
+        }
+      }
+    },
+    "token": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "user_id",
+        "username",
+        "display_name",
+        "scope",
+        "created_ms",
+        "expires_ms",
+        "revoked_ms"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+        },
+        "user_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "username": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "display_name": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/safeString"
+        },
+        "scope": {
+          "enum": [
+            "admin",
+            "viewer"
+          ]
+        },
+        "created_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "expires_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "revoked_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "tokenList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/token"
+          }
+        }
+      }
+    },
+    "tokenOnce": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "token",
+        "record"
+      ],
+      "properties": {
+        "token": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 512
+        },
+        "record": {
+          "$ref": "#/$defs/token"
+        }
+      }
+    },
+    "tokenRevocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revoked_ms"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+        },
+        "revoked_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        }
+      }
+    },
+    "sourceState": {
+      "enum": [
+        "not_observed",
+        "fresh",
+        "stale",
+        "disconnected",
+        "unavailable",
+        "incompatible",
+        "partial"
+      ]
+    },
+    "metricReading": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric",
+        "unit",
+        "scope_id",
+        "source_id",
+        "observed_ms",
+        "age_ms",
+        "value",
+        "quality",
+        "missing_reason",
+        "method_revision",
+        "provenance"
+      ],
+      "properties": {
+        "metric": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/metricId"
+        },
+        "unit": {
+          "enum": [
+            "ratio",
+            "state",
+            "bytes",
+            "boolean",
+            "milliseconds",
+            "tokens"
+          ]
+        },
+        "scope_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "source_id": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observed_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "age_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string",
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "quality": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/quality"
+        },
+        "missing_reason": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/missingReason"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "method_revision": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/safeString"
+        },
+        "provenance": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/provenance"
+        }
+      }
+    },
+    "overviewModel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "alias",
+        "digest",
+        "loaded",
+        "load_state",
+        "reported_size_bytes",
+        "reported_size_vram_bytes",
+        "provenance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "alias": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/safeString"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "digest": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "loaded": {
+          "type": "boolean"
+        },
+        "load_state": {
+          "enum": [
+            "reported_loaded",
+            "reported_not_loaded",
+            "unavailable"
+          ]
+        },
+        "reported_size_bytes": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint64Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reported_size_vram_bytes": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint64Decimal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "provenance": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/provenance"
+        }
+      }
+    },
+    "overview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generated_ms",
+        "deployment_state",
+        "state",
+        "host_count",
+        "target_count",
+        "open_incident_count",
+        "observed_request_population",
+        "history_available",
+        "hosts",
+        "targets",
+        "capabilities_missing"
+      ],
+      "properties": {
+        "generated_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "deployment_state": {
+          "$ref": "deployment-state.schema.json"
+        },
+        "state": {
+          "$ref": "#/$defs/sourceState"
+        },
+        "host_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "target_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "open_incident_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "observed_request_population": {
+          "enum": [
+            "present",
+            "absent",
+            "partial",
+            "expired"
+          ]
+        },
+        "history_available": {
+          "type": "boolean"
+        },
+        "hosts": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/host"
+          }
+        },
+        "targets": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/target"
+          }
+        },
+        "capabilities_missing": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "$ref": "../../collector/v1/common.schema.json#/$defs/missingCapability"
+          }
+        }
+      }
+    },
+    "historyScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "display_name",
+        "retired",
+        "host_id",
+        "target_id",
+        "earliest_retained_ms",
+        "latest_retained_ms",
+        "metrics"
+      ],
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+            },
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+            }
+          ]
+        },
+        "kind": {
+          "enum": [
+            "host",
+            "runtime",
+            "model",
+            "process"
+          ]
+        },
+        "display_name": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/safeString"
+        },
+        "retired": {
+          "type": "boolean"
+        },
+        "host_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "earliest_retained_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "latest_retained_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "metrics": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../../collector/v1/common.schema.json#/$defs/metricId"
+          }
+        }
+      }
+    },
+    "historyCatalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "generated_ms",
+        "earliest_retained_ms",
+        "latest_retained_ms",
+        "scopes",
+        "truncated"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "1.0"
+        },
+        "generated_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "earliest_retained_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "latest_retained_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scopes": {
+          "type": "array",
+          "maxItems": 256,
+          "items": {
+            "$ref": "#/$defs/historyScope"
+          }
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      }
+    },
+    "host": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "display_name",
+        "local",
+        "state",
+        "source_state",
+        "collector_version",
+        "current_session_generation",
+        "updated_ms",
+        "heartbeat_ms",
+        "heartbeat_age_ms",
+        "metrics",
+        "network_observed_ms",
+        "network_age_ms",
+        "network_observations",
+        "process_observed_ms",
+        "process_age_ms",
+        "process_summary",
+        "process_observations",
+        "capabilities_missing"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "display_name": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/safeString"
+        },
+        "local": {
+          "type": "boolean"
+        },
+        "state": {
+          "enum": [
+            "active",
+            "retired",
+            "revoked",
+            "not_reporting"
+          ]
+        },
+        "source_state": {
+          "$ref": "#/$defs/sourceState"
+        },
+        "collector_version": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/safeString"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "current_session_generation": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "updated_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "heartbeat_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "heartbeat_age_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metrics": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "$ref": "#/$defs/metricReading"
+          }
+        },
+        "network_observed_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "network_age_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "network_observations": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "$ref": "../../collector/v1/network-observation.schema.json"
+          }
+        },
+        "process_observed_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "process_age_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "process_summary": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/process-summary.schema.json"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "process_observations": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "$ref": "../../collector/v1/process-observation.schema.json"
+          }
+        },
+        "capabilities_missing": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "$ref": "../../collector/v1/common.schema.json#/$defs/missingCapability"
+          }
+        }
+      }
+    },
+    "hostList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/host"
+          }
+        }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "host_id",
+        "host_local",
+        "display_name",
+        "adapter_id",
+        "association_state",
+        "retired",
+        "source_state",
+        "reachable",
+        "models_state",
+        "models_observed_ms",
+        "models_age_ms",
+        "models",
+        "capabilities_missing"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "host_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "host_local": {
+          "type": "boolean"
+        },
+        "display_name": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/safeString"
+        },
+        "adapter_id": {
+          "const": "ollama"
+        },
+        "association_state": {
+          "enum": [
+            "verified",
+            "declared_unverified",
+            "ambiguous"
+          ]
+        },
+        "retired": {
+          "type": "boolean"
+        },
+        "source_state": {
+          "$ref": "#/$defs/sourceState"
+        },
+        "reachable": {
+          "$ref": "#/$defs/metricReading"
+        },
+        "models_state": {
+          "$ref": "#/$defs/sourceState"
+        },
+        "models_observed_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "models_age_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "models": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/overviewModel"
+          }
+        },
+        "capabilities_missing": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "$ref": "../../collector/v1/common.schema.json#/$defs/missingCapability"
+          }
+        }
+      }
+    },
+    "targetList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/target"
+          }
+        }
+      }
+    },
+    "healthCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "ok",
+            "ready",
+            "not_ready"
+          ]
+        }
+      }
+    },
+    "evaluatorStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "started",
+        "last_attempt_ms",
+        "last_success_ms",
+        "lag_ms",
+        "last_pass_failed"
+      ],
+      "properties": {
+        "started": {
+          "type": "boolean"
+        },
+        "last_attempt_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "last_success_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lag_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "last_pass_failed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "monitorHealth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generated_ms",
+        "storage_state",
+        "collector_states",
+        "gaps",
+        "clock_warnings",
+        "evaluator"
+      ],
+      "properties": {
+        "generated_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "storage_state": {
+          "enum": [
+            "normal",
+            "warning",
+            "optional_jobs_stopped",
+            "bulk_ingest_paused",
+            "read_only_enospc"
+          ]
+        },
+        "collector_states": {
+          "type": "array",
+          "maxItems": 2,
+          "items": {
+            "$ref": "#/$defs/host"
+          }
+        },
+        "gaps": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "clock_warnings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evaluator": {
+          "$ref": "#/$defs/evaluatorStatus"
+        }
+      }
+    },
+    "enrollmentToken": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "host_id",
+        "token",
+        "expires_ms",
+        "hub_url",
+        "hub_ca_fingerprint_sha256"
+      ],
+      "properties": {
+        "host_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "token": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 256
+        },
+        "expires_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "hub_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://",
+          "maxLength": 2048
+        },
+        "hub_ca_fingerprint_sha256": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "seriesPage": {
+      "$ref": "query.schema.json"
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "code",
+        "severity",
+        "start_ms",
+        "end_ms",
+        "host_id",
+        "target_id"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "code": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "warning",
+            "critical",
+            "unknown"
+          ]
+        },
+        "start_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "end_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "host_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "eventList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/event"
+          }
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 512
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "alertControl": {
+      "$ref": "incident-response.schema.json#/$defs/alertControl"
+    },
+    "incident": {
+      "$ref": "incident-response.schema.json#/$defs/incidentDetail"
+    },
+    "incidentList": {
+      "$ref": "incident-response.schema.json#/$defs/incidentList"
+    },
+    "annotation": {
+      "$ref": "incident-response.schema.json#/$defs/annotation"
+    },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision",
+        "definition",
+        "created_ms",
+        "updated_ms"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "definition": {
+          "$ref": "action-request.schema.json#/$defs/rule"
+        },
+        "created_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "updated_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        }
+      }
+    },
+    "ruleList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        }
+      }
+    },
+    "maintenanceWindow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "scope_id",
+        "reason",
+        "expires_ms"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "scope_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "expires_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        }
+      }
+    },
+    "destination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision",
+        "type",
+        "display_name",
+        "enabled",
+        "secret_configured",
+        "configuration",
+        "last_test_ms",
+        "last_test_result",
+        "last_test_job_id"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "type": {
+          "enum": [
+            "webhook",
+            "smtp"
+          ]
+        },
+        "display_name": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/safeString"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "secret_configured": {
+          "type": "boolean"
+        },
+        "configuration": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "webhook",
+            "smtp"
+          ],
+          "properties": {
+            "webhook": {
+              "$ref": "action-request.schema.json#/$defs/destination/properties/webhook"
+            },
+            "smtp": {
+              "$ref": "action-request.schema.json#/$defs/destination/properties/smtp"
+            }
+          }
+        },
+        "last_test_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "last_test_result": {
+          "enum": [
+            "succeeded",
+            "failed",
+            null
+          ]
+        },
+        "last_test_job_id": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "destinationList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "$ref": "#/$defs/destination"
+          }
+        }
+      }
+    },
+    "delivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "destination_id",
+        "destination_revision",
+        "state",
+        "status",
+        "attempts",
+        "next_attempt_ms",
+        "safe_error_code",
+        "receiver_ack_ms",
+        "accepted_unknown"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "destination_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "destination_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "state": {
+          "enum": [
+            "pending",
+            "leased",
+            "sent",
+            "failed",
+            "expired",
+            "superseded_before_delivery",
+            "muted"
+          ]
+        },
+        "status": {
+          "enum": [
+            "queued",
+            "attempted",
+            "acknowledged",
+            "retrying",
+            "suppressed",
+            "terminal_failure"
+          ]
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "next_attempt_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "safe_error_code": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receiver_ack_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_unknown": {
+          "type": "boolean"
+        }
+      }
+    },
+    "attachment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "filename",
+        "media_type",
+        "size_bytes",
+        "sha256",
+        "verification_state",
+        "expires_ms"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10485760
+        },
+        "sha256": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+        },
+        "verification_state": {
+          "const": "operator_approved_unverified"
+        },
+        "expires_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        }
+      }
+    },
+    "export": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "state",
+        "snapshot_id",
+        "snapshot_revision",
+        "size_bytes",
+        "sha256",
+        "expires_ms"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "running",
+            "complete",
+            "failed",
+            "cancelled",
+            "expired"
+          ]
+        },
+        "snapshot_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "snapshot_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "size_bytes": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 104857600
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expires_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        }
+      }
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "raw_hours",
+        "rollup_days",
+        "request_days",
+        "projected_deletions"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "raw_hours": {
+          "type": "integer",
+          "minimum": 24,
+          "maximum": 72
+        },
+        "rollup_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "request_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "projected_deletions": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "storageForecast": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "physical_bytes",
+        "reserved_bytes",
+        "live_limit_bytes",
+        "state",
+        "estimated_days_remaining"
+      ],
+      "properties": {
+        "physical_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reserved_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "live_limit_bytes": {
+          "const": 17179869184
+        },
+        "state": {
+          "enum": [
+            "normal",
+            "warning",
+            "optional_jobs_stopped",
+            "bulk_ingest_paused",
+            "read_only_enospc"
+          ]
+        },
+        "estimated_days_remaining": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "user": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision",
+        "name",
+        "role",
+        "disabled",
+        "trust_generation",
+        "historical_restored"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "role": {
+          "enum": [
+            "admin",
+            "viewer"
+          ]
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "trust_generation": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/epoch"
+        },
+        "historical_restored": {
+          "type": "boolean"
+        }
+      }
+    },
+    "userList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "$ref": "#/$defs/user"
+          }
+        }
+      }
+    },
+    "sessionRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "user_id",
+        "created_ms",
+        "expires_ms",
+        "revoked_ms"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "user_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "created_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "expires_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "revoked_ms": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "sessionList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/sessionRecord"
+          }
+        }
+      }
+    },
+    "auditRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "actor_user_id",
+        "action",
+        "resource_id",
+        "time_ms"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "actor_user_id": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "resource_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 128
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "time_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        }
+      }
+    },
+    "auditList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/auditRecord"
+          }
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 512
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "jobList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "job.schema.json"
+          }
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 512
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "recoveryGrantList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 4,
+          "items": {
+            "$ref": "../../collector/v1/recovery-grant.schema.json"
+          }
+        }
+      }
+    },
+    "incidentSummary": {
+      "$ref": "incident-response.schema.json#/$defs/incidentSummary"
+    }
+  }
+}

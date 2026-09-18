@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/collector/v1/common.schema.json",
+  "title": "Collector protocol v1 common values",
+  "$defs": {
+    "uuid": {"type": "string", "format": "uuid", "maxLength": 36},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "safeString": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\u0000-\\u001f\\u007f]*$"},
+    "safeCode": {"type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[a-z][a-z0-9_]*$"},
+    "metricId": {"type": "string", "minLength": 3, "maxLength": 96, "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"},
+    "uint53": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+    "positiveUint53": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "uint64Decimal": {"type": "string", "pattern": "^(0|[1-9][0-9]{0,19})$", "maxLength": 20, "x-numeric-maximum": "18446744073709551615"},
+    "epoch": {"$ref": "#/$defs/uuid"},
+    "quality": {"enum": ["measured", "runtime_reported", "operator_imported_unverified", "derived", "estimated", "declared", "inferred", "unavailable"]},
+    "missingReason": {
+      "enum": [
+        "unsupported_platform_contract", "runtime_version_unverified", "permission_denied",
+        "source_timeout", "source_unreachable", "parse_rejected", "limit_exceeded",
+        "identity_unverified", "alignment_unavailable", "population_not_observed", "not_applicable",
+        "population_expired_or_partial", "method_uncertified", "field_omitted", "collection_gap"
+      ]
+    },
+    "missingCapability": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "reason"],
+      "properties": {
+        "id": {"$ref": "#/$defs/metricId"},
+        "reason": {"$ref": "#/$defs/missingReason"},
+        "detail_code": {"anyOf": [{"$ref": "#/$defs/safeCode"}, {"type": "null"}]}
+      }
+    },
+    "provenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source", "method_revision", "verification"],
+      "properties": {
+        "source": {"enum": ["darwin_api", "runtime_api", "direct_client", "operator_import", "operator_declaration", "contract_fixture"]},
+        "method_revision": {"$ref": "#/$defs/safeString"},
+        "verification": {"enum": ["direct_capture", "operator_imported_unverified", "declared_unverified", "synthetic_fixture"]},
+        "observed_at_ms": {"$ref": "#/$defs/uint53"},
+        "source_artifact_sha256": {"anyOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]}
+      }
+    },
+    "generationOptions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["num_ctx", "num_predict", "temperature", "seed", "think", "stream", "cold_warm_policy"],
+      "properties": {
+        "num_ctx": {"type": "integer", "minimum": 1, "maximum": 131072},
+        "num_predict": {"type": "integer", "minimum": 1, "maximum": 4096},
+        "temperature": {"anyOf": [{"type": "number", "minimum": 0, "maximum": 2}, {"type": "null"}]},
+        "seed": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 2147483647}, {"type": "null"}]},
+        "think": {"anyOf": [{"type": "boolean"}, {"type": "null"}]},
+        "stream": {"const": true},
+        "cold_warm_policy": {"enum": ["cold_model_unloaded", "warm_model_reported_loaded", "not_controlled"]}
+      }
+    },
+    "populationKey": {
+      "type": "object", "additionalProperties": false,
+      "required": ["target_id", "model_digest", "runtime_version", "runtime_build", "config_revision", "profile_id", "profile_sha256", "options", "concurrency", "vantage_id", "clock_method", "source_kind", "verification_state"],
+      "properties": {
+        "target_id": {"$ref": "#/$defs/uuid"},
+        "model_digest": {"$ref": "#/$defs/sha256"},
+        "runtime_version": {"$ref": "#/$defs/safeString"},
+        "runtime_build": {"anyOf": [{"$ref": "#/$defs/safeString"}, {"type": "null"}]},
+        "config_revision": {"$ref": "#/$defs/sha256"},
+        "profile_id": {"$ref": "#/$defs/safeCode"},
+        "profile_sha256": {"$ref": "#/$defs/sha256"},
+        "options": {"$ref": "#/$defs/generationOptions"},
+        "concurrency": {"type": "integer", "minimum": 1, "maximum": 4},
+        "vantage_id": {"$ref": "#/$defs/safeString"},
+        "clock_method": {"const": "monotonic"},
+        "source_kind": {"enum": ["deliberate_probe", "imported_test"]},
+        "verification_state": {"enum": ["direct_capture", "operator_imported_unverified"]}
+      },
+      "allOf": [
+        {"if": {"properties": {"source_kind": {"const": "deliberate_probe"}}}, "then": {"properties": {"verification_state": {"const": "direct_capture"}}}},
+        {"if": {"properties": {"source_kind": {"const": "imported_test"}}}, "then": {"properties": {"verification_state": {"const": "operator_imported_unverified"}}}}
+      ]
+    }
+  }
+}

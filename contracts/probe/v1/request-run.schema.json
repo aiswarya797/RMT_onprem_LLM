@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/probe/v1/request-run.schema.json",
+  "title": "Bounded observed request run v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "run_id", "deployment_id", "host_id", "source_id", "target_id", "model_id", "config_snapshot_id", "source_kind", "verification_state", "population_key", "expected_count", "submitted_count", "completed_count", "failed_count", "cancelled_count", "incomplete_count", "decoded_size_bytes", "finalization_state", "partial_reason", "content_persistence", "samples"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "run_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "deployment_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "host_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "source_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "target_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "model_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "config_snapshot_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "source_kind": {"enum": ["deliberate_probe", "imported_test"]},
+    "verification_state": {"enum": ["direct_capture", "operator_imported_unverified"]},
+    "population_key": {"$ref": "../../collector/v1/common.schema.json#/$defs/populationKey"},
+    "expected_count": {"type": "integer", "minimum": 1, "maximum": 10000},
+    "submitted_count": {"type": "integer", "minimum": 0, "maximum": 10000},
+    "completed_count": {"type": "integer", "minimum": 0, "maximum": 10000},
+    "failed_count": {"type": "integer", "minimum": 0, "maximum": 10000},
+    "cancelled_count": {"type": "integer", "minimum": 0, "maximum": 10000},
+    "incomplete_count": {"type": "integer", "minimum": 0, "maximum": 10000},
+    "decoded_size_bytes": {"type": "integer", "minimum": 1, "maximum": 8388608},
+    "finalization_state": {"enum": ["active", "finalized", "partial"]},
+    "partial_reason": {"anyOf": [{"enum": ["source_loss", "import_interrupted", "population_expired_or_partial"]}, {"type": "null"}]},
+    "content_persistence": {"const": "none"},
+    "samples": {"type": "array", "maxItems": 10000, "uniqueItems": true, "items": {"$ref": "request-sample.schema.json"}}
+  },
+  "allOf": [
+    {"if": {"properties": {"source_kind": {"const": "deliberate_probe"}}}, "then": {"properties": {"verification_state": {"const": "direct_capture"}, "expected_count": {"const": 1}}}},
+    {"if": {"properties": {"source_kind": {"const": "imported_test"}}}, "then": {"properties": {"verification_state": {"const": "operator_imported_unverified"}}}},
+    {"if": {"properties": {"finalization_state": {"enum": ["active", "finalized"]}}}, "then": {"properties": {"partial_reason": {"const": null}}}},
+    {"if": {"properties": {"finalization_state": {"const": "partial"}}}, "then": {"properties": {"partial_reason": {"type": "string"}}}}
+  ]
+}

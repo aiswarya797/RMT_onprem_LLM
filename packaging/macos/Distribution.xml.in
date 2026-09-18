@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+  <title>LLM Monitor</title>
+  <options customize="never" require-scripts="false" hostArchitectures="arm64"/>
+  <domains enable_localSystem="false" enable_currentUserHome="true" enable_anywhere="false"/>
+  <allowed-os-versions>
+    <os-version min="14.0"/>
+  </allowed-os-versions>
+  <choices-outline>
+    <line choice="default"/>
+  </choices-outline>
+  <choice id="default" visible="false">
+    <pkg-ref id="com.llm-monitor.payload"/>
+  </choice>
+  <pkg-ref id="com.llm-monitor.payload" version="@VERSION@">LLMMonitorPayload.pkg</pkg-ref>
+</installer-gui-script>

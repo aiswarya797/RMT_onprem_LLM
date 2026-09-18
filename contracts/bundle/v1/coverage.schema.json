@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://llm-monitor.local/contracts/bundle/v1/coverage.schema.json",
+  "title": "Bundle coverage and gaps v1", "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "requested_window", "effective_window", "sources", "gaps", "clock"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "requested_window": {"$ref": "#/$defs/window"}, "effective_window": {"$ref": "#/$defs/window"},
+    "sources": {"type": "array", "maxItems": 8, "items": {"type": "object", "additionalProperties": false, "required": ["source_id", "valid_duration_ms", "requested_duration_ms", "coverage_ratio", "state"], "properties": {"source_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}, "valid_duration_ms": {"type": "integer", "minimum": 0}, "requested_duration_ms": {"type": "integer", "minimum": 1}, "coverage_ratio": {"type": "number", "minimum": 0, "maximum": 1}, "state": {"enum": ["complete", "partial", "unavailable", "incompatible"]}}}},
+    "gaps": {"type": "array", "maxItems": 10000, "items": {"type": "object", "additionalProperties": false, "required": ["source_id", "start_ms", "end_ms", "reason", "lost_count"], "properties": {"source_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}, "start_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, "end_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, "reason": {"$ref": "../../collector/v1/common.schema.json#/$defs/missingReason"}, "lost_count": {"type": "integer", "minimum": 0}}}},
+    "clock": {"type": "object", "additionalProperties": false, "required": ["method", "cross_host_ordering", "max_uncertainty_ms", "discontinuities"], "properties": {"method": {"enum": ["single_host_monotonic_aligned", "hub_midpoint_offset"]}, "cross_host_ordering": {"enum": ["available", "alignment_unavailable"]}, "max_uncertainty_ms": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 60000}, {"type": "null"}]}, "discontinuities": {"type": "integer", "minimum": 0}}}
+  },
+  "$defs": {"window": {"type": "object", "additionalProperties": false, "required": ["start_ms", "end_ms"], "properties": {"start_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, "end_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}}}}
+}

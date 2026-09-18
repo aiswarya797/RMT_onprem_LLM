@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/collector/v1/enrollment.schema.json",
+  "title": "Collector enrollment exchange v1",
+  "description": "The one-use enrollment token is carried in Authorization and authenticated before this bounded body is decoded.",
+  "type": "object", "additionalProperties": false,
+  "required": ["protocol", "deployment_id", "host_id", "installation_id", "csr_pem", "hub_ca_fingerprint_sha256"],
+  "properties": {
+    "protocol": {"const": "1.0"},
+    "deployment_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "host_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "installation_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "csr_pem": {"type": "string", "minLength": 64, "maxLength": 16384, "pattern": "^-----BEGIN CERTIFICATE REQUEST-----"},
+    "hub_ca_fingerprint_sha256": {"$ref": "common.schema.json#/$defs/sha256"}
+  }
+}

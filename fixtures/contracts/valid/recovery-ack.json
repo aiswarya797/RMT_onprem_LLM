@@ -1,0 +1,21 @@
+{
+  "grant_id": "a0000000-0000-4000-8000-000000000001",
+  "grant_sha256": "658d9e06be5a175228ddea952cfb63b408a75bd321e573a2d1549ddd3f66af36",
+  "replay_request_id": "a0000000-0000-4000-8000-000000000003",
+  "scope_sha256": "ae9c5447c8e3b1c05ab7cdb1cead8482230ebea55bc85b5c91330e15f8f15b67",
+  "durable": true,
+  "accepted": 1,
+  "duplicate": 0,
+  "rejected": 0,
+  "receipts": [
+    {
+      "original_collector_boot_id": "11111111-1111-4111-8111-111111111111",
+      "original_source_id": "33333333-3333-4333-8333-333333333333",
+      "original_sequence": 42,
+      "original_payload_sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+      "disposition": "recovered"
+    }
+  ],
+  "complete": true,
+  "hub_time_ms": 1789473600030
+}

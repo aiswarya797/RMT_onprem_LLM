@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/api/v1/action-inventory.schema.json",
+  "title": "Complete shipped action inventory v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "actions"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "actions": {
+      "type": "array", "minItems": 60, "maxItems": 128,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "surface", "method", "path", "permission", "mutation", "audit", "generation_precondition", "idempotency", "request_contract", "response_contract"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]{2,95}$"},
+          "surface": {"enum": ["remote_api", "collector_api", "local_owner", "local_file"]},
+          "method": {"anyOf": [{"enum": ["GET", "POST", "PUT", "PATCH", "DELETE"]}, {"type": "null"}]},
+          "path": {"type": "string", "minLength": 1, "maxLength": 192},
+          "permission": {"enum": ["unauthenticated", "authenticated_user", "admin", "admin_or_viewer", "own_account", "collector_certificate", "local_owner"]},
+          "mutation": {"type": "boolean"},
+          "audit": {"enum": ["security", "mutation", "external_send", "local_recovery", "access_only", "none"]},
+          "generation_precondition": {"enum": ["required", "exempt_auth", "collector_security_generation", "not_applicable"]},
+          "idempotency": {"enum": ["required", "recommended", "exempt"]},
+          "request_contract": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*$"},
+          "response_contract": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*$"}
+        }
+      }
+    }
+  }
+}

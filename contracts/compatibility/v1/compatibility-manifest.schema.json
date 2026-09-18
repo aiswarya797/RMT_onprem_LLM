@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/compatibility/v1/compatibility-manifest.schema.json",
+  "title": "Exact supported-cell evidence manifest v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "manifest_id", "registry_revision", "captured_at_utc", "compatibility_scope", "qualification_stage", "status", "execution_status", "host", "platform_fields", "runtime", "model", "rmt_artifact", "field_capabilities", "security_review", "source_verification_sha256", "evidence", "certification_gates", "later_stage_gates", "limitations"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "manifest_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "registry_revision": {"const": "mac-ollama-1"},
+    "captured_at_utc": {"type": "string", "format": "date-time"},
+    "compatibility_scope": {"const": "single_local_mac_candidate"},
+    "qualification_stage": {"enum": ["private_trial", "general_release"]},
+    "status": {"enum": ["certified", "unverified", "incompatible"]},
+    "execution_status": {"enum": ["not_executed", "partially_executed", "executed"]},
+    "host": {
+      "type": "object", "additionalProperties": false,
+      "required": ["architecture", "chip", "model", "physical_memory_bytes", "os_version", "os_build", "evidence_state"],
+      "properties": {
+        "architecture": {"const": "arm64"}, "chip": {"type": "string", "maxLength": 64},
+        "model": {"type": "string", "maxLength": 64}, "physical_memory_bytes": {"type": "integer", "minimum": 1},
+        "os_version": {"type": "string", "maxLength": 32}, "os_build": {"type": "string", "maxLength": 32},
+        "evidence_state": {"enum": ["observed_by_feasibility_helper_unverified_for_rmt", "verified_by_rmt_capture"]}
+      }
+    },
+    "platform_fields": {
+      "type": "object", "additionalProperties": false,
+      "required": ["gpu_driver", "container_image"],
+      "properties": {
+        "gpu_driver": {"$ref": "#/$defs/notApplicableField"},
+        "container_image": {"$ref": "#/$defs/notApplicableField"}
+      }
+    },
+    "runtime": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "version", "commit", "artifact_url", "artifact_size_bytes", "artifact_sha256", "binary_sha256", "signature_state", "team_id", "embedded_go_version", "module_version", "vcs_modified", "execution_status", "security_qualification"],
+      "properties": {
+        "name": {"const": "ollama"}, "version": {"type": "string", "maxLength": 32},
+        "commit": {"pattern": "^[0-9a-f]{40}$"}, "artifact_url": {"type": "string", "format": "uri", "maxLength": 256},
+        "artifact_size_bytes": {"type": "integer", "minimum": 1}, "artifact_sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"},
+        "binary_sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"},
+        "signature_state": {"enum": ["developer_id_verified", "ad_hoc", "unverified"]},
+        "team_id": {"anyOf": [{"type": "string", "pattern": "^[A-Z0-9]{10}$"}, {"type": "null"}]},
+        "embedded_go_version": {"type": "string", "maxLength": 32}, "module_version": {"type": "string", "maxLength": 64},
+        "vcs_modified": {"type": "boolean"}, "execution_status": {"enum": ["not_executed", "executed"]}, "security_qualification": {"enum": ["pending", "qualified", "rejected"]}
+      }
+    },
+    "model": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository", "revision", "file", "size_bytes", "sha256", "format", "quantization", "license", "ollama_import_digest", "tokenizer", "dataset", "prompt_profile", "execution_status"],
+      "properties": {
+        "repository": {"type": "string", "maxLength": 128}, "revision": {"pattern": "^[0-9a-f]{40}$"},
+        "file": {"type": "string", "maxLength": 128, "pattern": "^[^/]+$"}, "size_bytes": {"type": "integer", "minimum": 1, "maximum": 1073741824},
+        "sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}, "format": {"type": "string", "maxLength": 32},
+        "quantization": {"type": "string", "maxLength": 32}, "ollama_import_digest": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}, {"type": "null"}]},
+        "license": {"const": "Apache-2.0"},
+        "tokenizer": {"type": "object", "additionalProperties": false, "required": ["state", "sha256"], "properties": {"state": {"const": "embedded_in_gguf_not_separately_retrievable"}, "sha256": {"const": null}}},
+        "dataset": {"type": "object", "additionalProperties": false, "required": ["state", "sha256"], "properties": {"state": {"const": "not_used"}, "sha256": {"const": null}}},
+        "prompt_profile": {
+          "type": "object", "additionalProperties": false,
+          "required": ["state", "profile_id", "sha256"],
+          "properties": {
+            "state": {"enum": ["not_frozen", "frozen"]},
+            "profile_id": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"}, {"type": "null"}]},
+            "sha256": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}, {"type": "null"}]}
+          },
+          "allOf": [
+            {"if": {"properties": {"state": {"const": "not_frozen"}}}, "then": {"properties": {"profile_id": {"const": null}, "sha256": {"const": null}}}},
+            {"if": {"properties": {"state": {"const": "frozen"}}}, "then": {"properties": {"profile_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"}, "sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}}}}
+          ]
+        },
+        "execution_status": {"enum": ["downloaded_only", "imported", "executed"]}
+      }
+    },
+    "rmt_artifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["present", "build_id", "sha256", "signed", "notarized", "executed"],
+      "properties": {"present": {"type": "boolean"}, "build_id": {"anyOf": [{"type": "string", "maxLength": 128}, {"type": "null"}]}, "sha256": {"anyOf": [{"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}, {"type": "null"}]}, "signed": {"type": "boolean"}, "notarized": {"type": "boolean"}, "executed": {"type": "boolean"}},
+      "allOf": [
+        {"if": {"properties": {"present": {"const": false}}}, "then": {"properties": {"build_id": {"const": null}, "sha256": {"const": null}, "signed": {"const": false}, "notarized": {"const": false}, "executed": {"const": false}}}},
+        {"if": {"properties": {"present": {"const": true}}}, "then": {"properties": {"build_id": {"type": "string", "minLength": 1}, "sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}}}}
+      ]
+    },
+    "field_capabilities": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"type": "object", "additionalProperties": false, "required": ["id", "status", "reason"], "properties": {"id": {"$ref": "../../collector/v1/common.schema.json#/$defs/metricId"}, "status": {"enum": ["certified", "unverified", "unavailable"]}, "reason": {"type": "string", "maxLength": 160}}}},
+    "security_review": {"type": "object", "additionalProperties": false, "required": ["status", "osv_package_queries", "matched_dependency_count", "native_libraries_covered", "call_path_reachability_determined"], "properties": {"status": {"enum": ["pending", "qualified", "rejected"]}, "osv_package_queries": {"type": "integer", "minimum": 0}, "matched_dependency_count": {"type": "integer", "minimum": 0}, "native_libraries_covered": {"type": "boolean"}, "call_path_reachability_determined": {"type": "boolean"}}, "allOf": [{"if": {"properties": {"status": {"const": "qualified"}}}, "then": {"properties": {"native_libraries_covered": {"const": true}, "call_path_reachability_determined": {"const": true}}}}]},
+    "source_verification_sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"},
+    "evidence": {"type": "array", "minItems": 2, "maxItems": 64, "items": {"type": "object", "additionalProperties": false, "required": ["kind", "path", "sha256", "synthetic", "execution"], "properties": {"kind": {"enum": ["source_inspection", "artifact_inspection", "natural_baseline", "runtime_capture", "rmt_capture"]}, "path": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[A-Za-z0-9._/-]+$"}, "sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}, "synthetic": {"type": "boolean"}, "execution": {"enum": ["not_executed", "observation_only", "executed"]}}, "allOf": [{"if": {"properties": {"kind": {"const": "natural_baseline"}}}, "then": {"properties": {"execution": {"const": "observation_only"}}}}, {"if": {"properties": {"kind": {"enum": ["runtime_capture", "rmt_capture"]}}}, "then": {"properties": {"synthetic": {"const": false}, "execution": {"const": "executed"}}}}]}},
+    "certification_gates": {"type": "array", "minItems": 0, "maxItems": 16, "uniqueItems": true, "items": {"enum": ["independent_astra_review", "ollama_runtime_capture", "model_import_digest_and_profile", "rmt_signed_notarized_artifact", "t16_t24_field_capture", "launchagent_lifecycle", "rmt_diagnostics_and_overhead", "trial_72h", "soak_30d"]}},
+    "later_stage_gates": {"type": "array", "minItems": 0, "maxItems": 1, "uniqueItems": true, "items": {"const": "soak_30d"}},
+    "limitations": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"type": "string", "minLength": 1, "maxLength": 256}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"qualification_stage": {"const": "private_trial"}}},
+      "then": {
+        "properties": {
+          "certification_gates": {"items": {"enum": ["independent_astra_review", "ollama_runtime_capture", "model_import_digest_and_profile", "rmt_signed_notarized_artifact", "t16_t24_field_capture", "launchagent_lifecycle", "rmt_diagnostics_and_overhead", "trial_72h"]}},
+          "later_stage_gates": {"const": ["soak_30d"]}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"qualification_stage": {"const": "general_release"}}},
+      "then": {"properties": {"later_stage_gates": {"maxItems": 0}}}
+    },
+    {
+      "if": {"properties": {"runtime": {"properties": {"execution_status": {"const": "executed"}}}}},
+      "then": {"properties": {"evidence": {"contains": {"properties": {"kind": {"const": "runtime_capture"}, "execution": {"const": "executed"}}, "required": ["kind", "execution"]}, "minContains": 1}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "certified"}}},
+      "then": {
+        "properties": {
+          "execution_status": {"const": "executed"},
+          "host": {"properties": {"evidence_state": {"const": "verified_by_rmt_capture"}}},
+          "runtime": {"properties": {"signature_state": {"const": "developer_id_verified"}, "team_id": {"type": "string", "pattern": "^[A-Z0-9]{10}$"}, "execution_status": {"const": "executed"}, "security_qualification": {"const": "qualified"}}},
+          "model": {"properties": {"execution_status": {"const": "executed"}, "ollama_import_digest": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}, "prompt_profile": {"properties": {"state": {"const": "frozen"}, "profile_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"}, "sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}}}}},
+          "rmt_artifact": {"properties": {"present": {"const": true}, "build_id": {"type": "string", "minLength": 1}, "sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}, "signed": {"const": true}, "notarized": {"const": true}, "executed": {"const": true}}},
+          "field_capabilities": {"items": {"properties": {"status": {"enum": ["certified", "unavailable"]}}}},
+          "security_review": {"properties": {"status": {"const": "qualified"}, "native_libraries_covered": {"const": true}, "call_path_reachability_determined": {"const": true}}},
+          "evidence": {"allOf": [{"contains": {"properties": {"kind": {"const": "runtime_capture"}, "execution": {"const": "executed"}}, "required": ["kind", "execution"]}, "minContains": 1}, {"contains": {"properties": {"kind": {"const": "rmt_capture"}, "execution": {"const": "executed"}}, "required": ["kind", "execution"]}, "minContains": 1}]},
+          "certification_gates": {"maxItems": 0}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "notApplicableField": {"type": "object", "additionalProperties": false, "required": ["value", "status", "reason"], "properties": {"value": {"const": null}, "status": {"const": "not_applicable"}, "reason": {"type": "string", "minLength": 1, "maxLength": 160}}}
+  }
+}

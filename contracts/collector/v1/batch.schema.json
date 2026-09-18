@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/collector/v1/batch.schema.json",
+  "title": "Durable collector observation batch v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["protocol", "delivery_mode", "security_generation", "session_generation", "deployment_id", "host_id", "collector_boot_id", "batch_id", "frames"],
+  "properties": {
+    "protocol": {"const": "1.0"},
+    "delivery_mode": {"enum": ["current", "replay"]},
+    "security_generation": {"$ref": "common.schema.json#/$defs/epoch"},
+    "session_generation": {"$ref": "common.schema.json#/$defs/positiveUint53"},
+    "deployment_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "host_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "collector_boot_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "batch_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "frames": {"type": "array", "minItems": 1, "maxItems": 64, "items": {"$ref": "#/$defs/frame"}}
+  },
+  "$defs": {
+    "nullableUuid": {"anyOf": [{"$ref": "common.schema.json#/$defs/uuid"}, {"type": "null"}]},
+    "frame": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_id", "sequence", "observed_wall_ms", "estimated_utc_ms", "offset_ms", "uncertainty_ms", "monotonic_start_ns", "monotonic_end_ns", "duration_ms", "definition_revision", "incarnation_id", "quality", "provenance", "gauges", "network_observations", "model_observations", "process_observations", "process_summary", "capabilities_missing"],
+      "properties": {
+        "source_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "sequence": {"$ref": "common.schema.json#/$defs/uint53"},
+        "observed_wall_ms": {"$ref": "common.schema.json#/$defs/uint53"},
+        "estimated_utc_ms": {"anyOf": [{"$ref": "common.schema.json#/$defs/uint53"}, {"type": "null"}]},
+        "offset_ms": {"anyOf": [{"type": "integer", "minimum": -86400000, "maximum": 86400000}, {"type": "null"}]},
+        "uncertainty_ms": {"anyOf": [{"type": "integer", "minimum": 0, "maximum": 60000}, {"type": "null"}]},
+        "monotonic_start_ns": {"$ref": "common.schema.json#/$defs/uint64Decimal"},
+        "monotonic_end_ns": {"$ref": "common.schema.json#/$defs/uint64Decimal"},
+        "duration_ms": {"type": "integer", "minimum": 0, "maximum": 5000},
+        "definition_revision": {"const": "mac-ollama-1"},
+        "incarnation_id": {"$ref": "#/$defs/nullableUuid"},
+        "quality": {"$ref": "common.schema.json#/$defs/quality"},
+        "provenance": {"$ref": "common.schema.json#/$defs/provenance"},
+        "gauges": {
+          "type": "object", "additionalProperties": false, "maxProperties": 6,
+          "properties": {
+            "host.cpu.busy_ratio": {"allOf": [{"$ref": "#/$defs/metricObservation"}, {"properties": {"value": {"anyOf": [{"type": "number", "minimum": 0, "maximum": 1}, {"type": "null"}]}}}]},
+            "host.memory.pressure_level": {"allOf": [{"$ref": "#/$defs/metricObservation"}, {"properties": {"value": {"anyOf": [{"enum": ["normal", "warning", "critical"]}, {"type": "null"}]}}}]},
+            "host.memory.compressed_bytes": {"allOf": [{"$ref": "#/$defs/metricObservation"}, {"properties": {"value": {"anyOf": [{"$ref": "common.schema.json#/$defs/uint64Decimal"}, {"type": "null"}]}}}]},
+            "host.memory.swap_used_bytes": {"allOf": [{"$ref": "#/$defs/metricObservation"}, {"properties": {"value": {"anyOf": [{"$ref": "common.schema.json#/$defs/uint64Decimal"}, {"type": "null"}]}}}]},
+            "host.disk.free_bytes": {"allOf": [{"$ref": "#/$defs/metricObservation"}, {"properties": {"value": {"anyOf": [{"$ref": "common.schema.json#/$defs/uint64Decimal"}, {"type": "null"}]}}}]},
+            "runtime.reachable": {"allOf": [{"$ref": "#/$defs/metricObservation"}, {"properties": {"value": {"anyOf": [{"type": "boolean"}, {"type": "null"}]}}}]}
+          }
+        },
+        "network_observations": {"type": "array", "maxItems": 8, "items": {"$ref": "network-observation.schema.json"}},
+        "model_observations": {"type": "array", "maxItems": 2, "items": {"$ref": "model-observation.schema.json"}},
+        "process_observations": {"type": "array", "maxItems": 32, "items": {"$ref": "process-observation.schema.json"}},
+        "process_summary": {"anyOf": [{"$ref": "process-summary.schema.json"}, {"type": "null"}]},
+        "endpoint_association": {"$ref": "#/$defs/endpointAssociation"},
+        "config_observation": {"$ref": "#/$defs/configObservation"},
+        "capabilities_missing": {"type": "array", "maxItems": 32, "items": {"$ref": "common.schema.json#/$defs/missingCapability"}}
+      }
+    },
+    "endpointAssociation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["target_id", "endpoint_hash", "target_revision", "manifest_revision", "manifest_sha256", "selector_sha256", "identity_revision", "runtime_version", "runtime_source_pin_id", "pid", "process_start_identity", "process_key", "quality", "reason", "verified_exit", "provenance"],
+      "properties": {
+        "target_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "endpoint_hash": {"$ref": "common.schema.json#/$defs/sha256"},
+        "target_revision": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "manifest_revision": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "manifest_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+        "selector_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+        "identity_revision": {"$ref": "common.schema.json#/$defs/sha256"},
+        "runtime_version": {"anyOf": [{"$ref": "common.schema.json#/$defs/safeString"}, {"type": "null"}]},
+        "runtime_source_pin_id": {"anyOf": [{"$ref": "common.schema.json#/$defs/safeString"}, {"type": "null"}]},
+        "pid": {"anyOf": [{"type": "integer", "minimum": 1, "maximum": 2147483647}, {"type": "null"}]},
+        "process_start_identity": {"anyOf": [{"type": "string", "pattern": "^[1-9][0-9]{0,19}$"}, {"type": "null"}]},
+        "process_key": {"anyOf": [{"$ref": "common.schema.json#/$defs/sha256"}, {"type": "null"}]},
+        "quality": {"enum": ["verified", "declared_unverified", "ambiguous"]},
+        "reason": {"anyOf": [{"$ref": "common.schema.json#/$defs/missingReason"}, {"type": "null"}]},
+        "verified_exit": {"anyOf": [{"$ref": "#/$defs/verifiedProcessExit"}, {"type": "null"}]},
+        "provenance": {"$ref": "common.schema.json#/$defs/provenance"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"quality": {"const": "verified"}}, "required": ["quality"]},
+          "then": {"properties": {"runtime_version": {"not": {"type": "null"}}, "runtime_source_pin_id": {"not": {"type": "null"}}, "pid": {"not": {"type": "null"}}, "process_start_identity": {"not": {"type": "null"}}, "process_key": {"not": {"type": "null"}}, "reason": {"type": "null"}}},
+          "else": {"properties": {"pid": {"type": "null"}, "process_start_identity": {"type": "null"}, "process_key": {"type": "null"}, "reason": {"not": {"type": "null"}}}}
+        }
+      ]
+    },
+    "verifiedProcessExit": {
+      "type": "object", "additionalProperties": false,
+      "required": ["pid", "process_start_identity", "process_key", "last_seen_ms"],
+      "properties": {
+        "pid": {"type": "integer", "minimum": 1, "maximum": 2147483647},
+        "process_start_identity": {"type": "string", "pattern": "^[1-9][0-9]{0,19}$"},
+        "process_key": {"$ref": "common.schema.json#/$defs/sha256"},
+        "last_seen_ms": {"$ref": "common.schema.json#/$defs/uint53"}
+      }
+    },
+    "configObservation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["target_id", "config_hash", "previous_config_hash", "previous_observed_ms", "fields", "field_provenance"],
+      "properties": {
+        "target_id": {"$ref": "common.schema.json#/$defs/uuid"},
+        "config_hash": {"$ref": "common.schema.json#/$defs/sha256"},
+        "previous_config_hash": {"anyOf": [{"$ref": "common.schema.json#/$defs/sha256"}, {"type": "null"}]},
+        "previous_observed_ms": {"anyOf": [{"$ref": "common.schema.json#/$defs/uint53"}, {"type": "null"}]},
+        "fields": {
+          "type": "object", "additionalProperties": false,
+          "required": ["server_version", "server_build", "selected_model"],
+          "properties": {
+            "server_version": {"$ref": "common.schema.json#/$defs/safeString"},
+            "server_build": {"anyOf": [{"$ref": "common.schema.json#/$defs/safeString"}, {"type": "null"}]},
+            "selected_model": {"anyOf": [{"$ref": "#/$defs/selectedModelConfig"}, {"type": "null"}]}
+          }
+        },
+        "field_provenance": {
+          "type": "object", "additionalProperties": false,
+          "required": ["server_version", "server_build", "selected_model"],
+          "properties": {
+            "server_version": {"$ref": "common.schema.json#/$defs/provenance"},
+            "server_build": {"anyOf": [{"$ref": "common.schema.json#/$defs/provenance"}, {"type": "null"}]},
+            "selected_model": {"anyOf": [{"$ref": "#/$defs/selectedModelProvenance"}, {"type": "null"}]}
+          }
+        }
+      }
+    },
+    "selectedModelConfig": {
+      "type": "object", "additionalProperties": false,
+      "required": ["alias", "digest", "format", "family", "quantization", "context_length"],
+      "properties": {
+        "alias": {"$ref": "common.schema.json#/$defs/safeString"},
+        "digest": {"anyOf": [{"$ref": "common.schema.json#/$defs/sha256"}, {"type": "null"}]},
+        "format": {"anyOf": [{"$ref": "common.schema.json#/$defs/safeString"}, {"type": "null"}]},
+        "family": {"anyOf": [{"$ref": "common.schema.json#/$defs/safeString"}, {"type": "null"}]},
+        "quantization": {"anyOf": [{"$ref": "common.schema.json#/$defs/safeString"}, {"type": "null"}]},
+        "context_length": {"anyOf": [{"type": "integer", "minimum": 1, "maximum": 131072}, {"type": "null"}]}
+      }
+    },
+    "selectedModelProvenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["alias", "digest", "format", "family", "quantization", "context_length"],
+      "properties": {
+        "alias": {"$ref": "common.schema.json#/$defs/provenance"},
+        "digest": {"anyOf": [{"$ref": "common.schema.json#/$defs/provenance"}, {"type": "null"}]},
+        "format": {"anyOf": [{"$ref": "common.schema.json#/$defs/provenance"}, {"type": "null"}]},
+        "family": {"anyOf": [{"$ref": "common.schema.json#/$defs/provenance"}, {"type": "null"}]},
+        "quantization": {"anyOf": [{"$ref": "common.schema.json#/$defs/provenance"}, {"type": "null"}]},
+        "context_length": {"anyOf": [{"$ref": "common.schema.json#/$defs/provenance"}, {"type": "null"}]}
+      }
+    },
+    "metricObservation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["value", "quality", "missing_reason", "provenance"],
+      "properties": {
+        "value": {},
+        "quality": {"$ref": "common.schema.json#/$defs/quality"},
+        "missing_reason": {"anyOf": [{"$ref": "common.schema.json#/$defs/missingReason"}, {"type": "null"}]},
+        "provenance": {"$ref": "common.schema.json#/$defs/provenance"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"value": {"type": "null"}}, "required": ["value"]},
+          "then": {"properties": {"quality": {"const": "unavailable"}, "missing_reason": {"not": {"type": "null"}}}}
+        },
+        {
+          "if": {"properties": {"value": {"not": {"type": "null"}}}, "required": ["value"]},
+          "then": {"properties": {"missing_reason": {"type": "null"}}}
+        }
+      ]
+    }
+  }
+}

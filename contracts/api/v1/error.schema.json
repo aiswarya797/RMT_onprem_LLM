@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/api/v1/error.schema.json",
+  "title": "Safe API and CLI error v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "code", "message", "recovery_action", "request_id", "retryable", "cli_exit_code"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "code": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$"},
+    "message": {"type": "string", "minLength": 1, "maxLength": 256, "pattern": "^[^\\u0000-\\u001f\\u007f]*$"},
+    "recovery_action": {"enum": ["fix_input", "upgrade_component", "authenticate", "request_admin", "retry_later", "review_current_state", "free_capacity", "repair_source", "use_local_owner_command", "none"]},
+    "request_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "retryable": {"type": "boolean"},
+    "cli_exit_code": {"enum": [2, 3, 4, 5, 6, 7, 8]}
+  }
+}

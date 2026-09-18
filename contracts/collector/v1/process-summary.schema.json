@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/collector/v1/process-summary.schema.json",
+  "title": "Bounded process enumeration summary v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["eligible_pid_count", "examined_pid_count", "permission_denied_count", "retained_process_count", "enumeration_truncated", "coverage", "method_revision", "sample_interval_ms", "scan_duration_ms"],
+  "properties": {
+    "eligible_pid_count": {"type": "integer", "minimum": 0, "maximum": 512},
+    "examined_pid_count": {"type": "integer", "minimum": 0, "maximum": 512},
+    "permission_denied_count": {"type": "integer", "minimum": 0, "maximum": 512},
+    "retained_process_count": {"type": "integer", "minimum": 0, "maximum": 32},
+    "enumeration_truncated": {"type": "boolean"},
+    "coverage": {"enum": ["complete", "partial"]},
+    "method_revision": {"$ref": "common.schema.json#/$defs/safeString"},
+    "sample_interval_ms": {"type": "integer", "minimum": 1000, "maximum": 60000},
+    "scan_duration_ms": {"type": "integer", "minimum": 0, "maximum": 2000}
+  }
+}

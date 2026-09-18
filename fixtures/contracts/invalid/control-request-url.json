@@ -1,0 +1,9 @@
+{
+  "request_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  "host_id": "00000000-0000-4000-8000-000000000002",
+  "target_id": "44444444-4444-4444-8444-444444444444",
+  "operation": "refresh_existing_target",
+  "expires_ms": 1789473660000,
+  "url": "http://127.0.0.1:11434/api/generate",
+  "command": "ollama run"
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/api/v1/local-target-manifest.schema.json",
+  "title": "Reviewed local Ollama target manifest v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "manifest_id", "manifest_revision", "adapter_id", "endpoint", "identity_revision", "display_name"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "manifest_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "manifest_revision": {"type": "integer", "minimum": 1, "maximum": 1000000},
+    "adapter_id": {"const": "ollama"},
+    "endpoint": {
+      "type": "object", "additionalProperties": false,
+      "required": ["scheme", "loopback_host", "port", "base_path"],
+      "properties": {
+        "scheme": {"const": "http"},
+        "loopback_host": {"enum": ["127.0.0.1", "::1"]},
+        "port": {"type": "integer", "minimum": 1, "maximum": 65535},
+        "base_path": {"const": ""}
+      }
+    },
+    "identity_revision": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"},
+    "display_name": {"$ref": "../../collector/v1/common.schema.json#/$defs/safeString"}
+  }
+}

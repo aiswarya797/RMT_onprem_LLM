@@ -1,0 +1,981 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/api/v1/action-request.schema.json",
+  "title": "Finite API mutation bodies v1",
+  "$defs": {
+    "manualIncidentUpdate": {
+      "$ref": "incident-request.schema.json#/$defs/manualIncidentUpdate"
+    },
+    "annotationEdit": {
+      "$ref": "incident-request.schema.json#/$defs/annotationEdit"
+    },
+    "annotationCreate": {
+      "$ref": "incident-request.schema.json#/$defs/annotationCreate"
+    },
+    "empty": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 0
+    },
+    "credentials": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "username",
+        "password"
+      ],
+      "properties": {
+        "username": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "password": {
+          "type": "string",
+          "minLength": 12,
+          "maxLength": 1024
+        }
+      }
+    },
+    "bootstrapAdmin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bootstrap_token",
+        "username",
+        "password"
+      ],
+      "properties": {
+        "bootstrap_token": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 256
+        },
+        "username": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "password": {
+          "type": "string",
+          "minLength": 12,
+          "maxLength": 1024
+        }
+      }
+    },
+    "tokenCreate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "display_name",
+        "expires_ms"
+      ],
+      "properties": {
+        "display_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "expires_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        }
+      }
+    },
+    "enrollmentCreate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "host_display_name",
+        "expires_in_seconds"
+      ],
+      "properties": {
+        "host_display_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "expires_in_seconds": {
+          "const": 600
+        },
+        "replacement_host_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid",
+          "description": "Explicit reviewed identity of a retained host retired by a trust-reset restore. Omit for ordinary enrollment."
+        }
+      }
+    },
+    "revisionPatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected_revision",
+        "changes"
+      ],
+      "properties": {
+        "expected_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "changes": {
+          "type": "object",
+          "additionalProperties": false,
+          "maxProperties": 16,
+          "properties": {
+            "display_name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "enabled": {
+              "type": "boolean"
+            },
+            "role": {
+              "enum": [
+                "admin",
+                "viewer"
+              ]
+            },
+            "disabled": {
+              "type": "boolean"
+            },
+            "workflow_state": {
+              "enum": [
+                "open",
+                "closed"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope_id",
+        "start",
+        "end"
+      ],
+      "properties": {
+        "scope_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "incidentCreate": {
+      "$ref": "incident-request.schema.json#/$defs/manualIncidentCreate"
+    },
+    "acknowledgement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observed_transition_seq"
+      ],
+      "properties": {
+        "observed_transition_seq": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "assignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_user_id",
+        "expected_revision"
+      ],
+      "properties": {
+        "owner_user_id": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expected_revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "mute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reason",
+        "expires_ms"
+      ],
+      "properties": {
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "expires_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        }
+      }
+    },
+    "annotation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "incident_id",
+        "target_id",
+        "declared_time_ms",
+        "text",
+        "expected_revision"
+      ],
+      "properties": {
+        "incident_id": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "declared_time_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048,
+          "pattern": "^[^<>\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f]*$"
+        },
+        "expected_revision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "comparison": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/requestComparison"
+        },
+        {
+          "$ref": "#/$defs/hostWindowComparison"
+        }
+      ]
+    },
+    "declaredIntervention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "field",
+        "before_value_sha256",
+        "after_value_sha256",
+        "declaration_id",
+        "declared_time_ms"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "runtime_version",
+            "config_revision",
+            "generation_option"
+          ]
+        },
+        "field": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "before_value_sha256": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+        },
+        "after_value_sha256": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+        },
+        "declaration_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "declared_time_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        }
+      }
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resource_id"
+      ],
+      "properties": {
+        "resource_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        }
+      }
+    },
+    "exportPreview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "incident_id",
+        "snapshot_revision",
+        "include_model_digest",
+        "attachment_ids"
+      ],
+      "properties": {
+        "incident_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "snapshot_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "include_model_digest": {
+          "type": "boolean"
+        },
+        "attachment_ids": {
+          "type": "array",
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+          }
+        }
+      }
+    },
+    "exportConfirm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "preview_id",
+        "preview_sha256"
+      ],
+      "properties": {
+        "preview_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "preview_sha256": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+        }
+      }
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected_revision",
+        "raw_hours",
+        "rollup_days",
+        "request_days",
+        "confirm_delete_older"
+      ],
+      "properties": {
+        "expected_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "raw_hours": {
+          "type": "integer",
+          "minimum": 24,
+          "maximum": 72
+        },
+        "rollup_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "request_days": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
+        },
+        "confirm_delete_older": {
+          "type": "boolean"
+        }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected_revision",
+        "evaluator_type",
+        "scope_id",
+        "enabled",
+        "metric_id",
+        "request_population",
+        "aggregation",
+        "threshold",
+        "dwell_ms",
+        "recovery_ms"
+      ],
+      "properties": {
+        "expected_revision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evaluator_type": {
+          "enum": [
+            "ollama_unreachable",
+            "host_not_reporting",
+            "source_missing",
+            "memory_pressure",
+            "heavy_cpu",
+            "observed_request_duration",
+            "disk_monitor_health"
+          ]
+        },
+        "scope_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "metric_id": {
+          "anyOf": [
+            {
+              "enum": [
+                "request.client.first_byte_ms",
+                "request.client.first_content_ms",
+                "request.client.total_ms",
+                "request.runtime.total_duration_ms",
+                "request.runtime.load_duration_ms",
+                "request.runtime.prompt_eval_duration_ms",
+                "request.runtime.eval_duration_ms",
+                "request.runtime.prompt_tokens",
+                "request.runtime.output_tokens"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "request_population": {
+          "anyOf": [
+            {
+              "$ref": "../../collector/v1/common.schema.json#/$defs/populationKey"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "aggregation": {
+          "anyOf": [
+            {
+              "enum": [
+                "median",
+                "p95",
+                "minimum",
+                "maximum"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "threshold": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string",
+              "maxLength": 32
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "dwell_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1800000
+        },
+        "recovery_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1800000
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "evaluator_type": {
+                "const": "observed_request_duration"
+              }
+            },
+            "required": [
+              "evaluator_type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "metric_id": {
+                "type": "string"
+              },
+              "request_population": {
+                "type": "object"
+              },
+              "aggregation": {
+                "enum": [
+                  "median",
+                  "p95",
+                  "minimum",
+                  "maximum"
+                ]
+              },
+              "threshold": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "request_population": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "destination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected_revision",
+        "type",
+        "display_name",
+        "webhook",
+        "smtp",
+        "secret_input"
+      ],
+      "properties": {
+        "expected_revision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "enum": [
+            "webhook",
+            "smtp"
+          ]
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "webhook": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "https_url",
+                "hmac_enabled"
+              ],
+              "properties": {
+                "https_url": {
+                  "type": "string",
+                  "format": "uri",
+                  "maxLength": 2048,
+                  "pattern": "^https://"
+                },
+                "hmac_enabled": {
+                  "type": "boolean"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "smtp": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "host",
+                "port",
+                "tls_mode",
+                "from",
+                "to",
+                "username"
+              ],
+              "properties": {
+                "host": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 253
+                },
+                "port": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 65535
+                },
+                "tls_mode": {
+                  "enum": [
+                    "starttls_required",
+                    "implicit_tls"
+                  ]
+                },
+                "from": {
+                  "type": "string",
+                  "format": "email",
+                  "maxLength": 254
+                },
+                "to": {
+                  "type": "string",
+                  "format": "email",
+                  "maxLength": 254
+                },
+                "username": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "secret_input": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "webhook"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "webhook": {
+                "type": "object"
+              },
+              "smtp": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "webhook": {
+                "type": "null"
+              },
+              "smtp": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "attachmentStage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "filename",
+        "size_bytes",
+        "sha256",
+        "media_type"
+      ],
+      "properties": {
+        "filename": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^/\\\\]+$"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10485760
+        },
+        "sha256": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/sha256"
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "userCreate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "role",
+        "password"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "role": {
+          "enum": [
+            "admin",
+            "viewer"
+          ]
+        },
+        "password": {
+          "type": "string",
+          "minLength": 12,
+          "maxLength": 1024
+        }
+      }
+    },
+    "typedConfirmation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deployment_id"
+      ],
+      "properties": {
+        "deployment_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        }
+      }
+    },
+    "recoveryGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest",
+        "deployment_generation"
+      ],
+      "properties": {
+        "manifest": {
+          "$ref": "../../collector/v1/recovery-manifest.schema.json"
+        },
+        "deployment_generation": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/epoch"
+        }
+      }
+    },
+    "hostMetricId": {
+      "enum": [
+        "host.cpu.busy_ratio",
+        "host.memory.pressure_level",
+        "host.memory.compressed_bytes",
+        "host.memory.swap_used_bytes",
+        "host.disk.free_bytes",
+        "host.network.received_bytes_total",
+        "host.network.sent_bytes_total"
+      ]
+    },
+    "hostWindow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start_ms",
+        "end_ms",
+        "coverage_ratio"
+      ],
+      "properties": {
+        "start_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "end_ms": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uint53"
+        },
+        "coverage_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "requestComparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "comparison_kind",
+        "scope_id",
+        "metric_id",
+        "before_run_id",
+        "after_run_id",
+        "declared_intervention"
+      ],
+      "properties": {
+        "comparison_kind": {
+          "const": "request_run"
+        },
+        "scope_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "metric_id": {
+          "enum": [
+            "request.client.first_byte_ms",
+            "request.client.first_content_ms",
+            "request.client.total_ms",
+            "request.runtime.total_duration_ms",
+            "request.runtime.load_duration_ms",
+            "request.runtime.prompt_eval_duration_ms",
+            "request.runtime.eval_duration_ms",
+            "request.runtime.prompt_tokens",
+            "request.runtime.output_tokens"
+          ]
+        },
+        "before_run_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "after_run_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "declared_intervention": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/declaredIntervention"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "hostWindowComparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "comparison_kind",
+        "scope_id",
+        "host_id",
+        "source_id",
+        "metric_id",
+        "definition_revision",
+        "method_revision",
+        "resolution_tier",
+        "epoch_id",
+        "clock_method",
+        "minimum_coverage_ratio",
+        "before",
+        "after"
+      ],
+      "properties": {
+        "comparison_kind": {
+          "const": "host_window"
+        },
+        "scope_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "host_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "source_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "metric_id": {
+          "$ref": "#/$defs/hostMetricId"
+        },
+        "definition_revision": {
+          "const": "mac-ollama-1"
+        },
+        "method_revision": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/safeString"
+        },
+        "resolution_tier": {
+          "enum": [
+            "raw",
+            "minute",
+            "hour"
+          ]
+        },
+        "epoch_id": {
+          "$ref": "../../collector/v1/common.schema.json#/$defs/uuid"
+        },
+        "clock_method": {
+          "const": "single_host_monotonic_aligned"
+        },
+        "minimum_coverage_ratio": {
+          "const": 0.9
+        },
+        "before": {
+          "$ref": "#/$defs/hostWindow"
+        },
+        "after": {
+          "$ref": "#/$defs/hostWindow"
+        }
+      }
+    }
+  }
+}

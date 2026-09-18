@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/collector/v1/recovery-manifest.schema.json",
+  "title": "Retained collector spool recovery manifest v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "deployment_id", "host_id", "original_security_generation", "original_collector_boot_id", "created_ms", "total_bytes", "total_frames", "sources", "historical_definitions", "segments", "loss_intervals", "manifest_sha256"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "deployment_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "host_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "original_security_generation": {"$ref": "common.schema.json#/$defs/epoch"},
+    "original_collector_boot_id": {"$ref": "common.schema.json#/$defs/uuid"},
+    "created_ms": {"$ref": "common.schema.json#/$defs/uint53"},
+    "total_bytes": {"type": "integer", "minimum": 1, "maximum": 268435456},
+    "total_frames": {"type": "integer", "minimum": 1, "maximum": 1000000},
+    "sources": {"type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true, "items": {"$ref": "common.schema.json#/$defs/uuid"}},
+    "historical_definitions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["historical_only", "sources", "targets", "models"],
+      "properties": {
+        "historical_only": {"const": true},
+        "sources": {"type": "array", "minItems": 1, "maxItems": 8, "items": {"type": "object", "additionalProperties": false, "required": ["source_id", "kind", "target_id", "capability_revision", "active"], "properties": {"source_id": {"$ref": "common.schema.json#/$defs/uuid"}, "kind": {"enum": ["host", "runtime"]}, "target_id": {"anyOf": [{"$ref": "common.schema.json#/$defs/uuid"}, {"type": "null"}]}, "capability_revision": {"const": "mac-ollama-1"}, "active": {"const": false}}}},
+        "targets": {"type": "array", "maxItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["target_id", "adapter_id", "local_selector_sha256", "association_state"], "properties": {"target_id": {"$ref": "common.schema.json#/$defs/uuid"}, "adapter_id": {"const": "ollama"}, "local_selector_sha256": {"$ref": "common.schema.json#/$defs/sha256"}, "association_state": {"enum": ["verified", "declared_unverified", "ambiguous"]}}}},
+        "models": {"type": "array", "maxItems": 64, "items": {"type": "object", "additionalProperties": false, "required": ["model_id", "target_id", "alias", "digest", "reported_loaded"], "properties": {"model_id": {"$ref": "common.schema.json#/$defs/uuid"}, "target_id": {"$ref": "common.schema.json#/$defs/uuid"}, "alias": {"$ref": "common.schema.json#/$defs/safeString"}, "digest": {"anyOf": [{"$ref": "common.schema.json#/$defs/sha256"}, {"type": "null"}]}, "reported_loaded": {"const": false}}}}
+      }
+    },
+    "segments": {
+      "type": "array", "minItems": 1, "maxItems": 4096,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["source_id", "from_sequence", "to_sequence", "first_ms", "last_ms", "frame_count", "bytes", "segment_sha256"],
+        "properties": {
+          "source_id": {"$ref": "common.schema.json#/$defs/uuid"},
+          "from_sequence": {"$ref": "common.schema.json#/$defs/uint53"},
+          "to_sequence": {"$ref": "common.schema.json#/$defs/uint53"},
+          "first_ms": {"$ref": "common.schema.json#/$defs/uint53"},
+          "last_ms": {"$ref": "common.schema.json#/$defs/uint53"},
+          "frame_count": {"type": "integer", "minimum": 1, "maximum": 4},
+        "bytes": {"type": "integer", "minimum": 1, "maximum": 1048576, "$comment": "Sum of stored canonical payload bytes. This is not a decoded-size claim; frame_count<=4 and the 256 KiB canonical-frame limit separately bound decoded processing to 1 MiB."},
+          "segment_sha256": {"$ref": "common.schema.json#/$defs/sha256"}
+        }
+      }
+    },
+    "loss_intervals": {"type": "array", "maxItems": 1024, "items": {"type": "object", "additionalProperties": false, "required": ["start_ms", "end_ms", "lost_count", "reason"], "properties": {"start_ms": {"$ref": "common.schema.json#/$defs/uint53"}, "end_ms": {"$ref": "common.schema.json#/$defs/uint53"}, "lost_count": {"$ref": "common.schema.json#/$defs/positiveUint53"}, "reason": {"$ref": "common.schema.json#/$defs/safeCode"}}}},
+    "manifest_sha256": {"$ref": "common.schema.json#/$defs/sha256", "$comment": "SHA-256 of compact UTF-8 JSON in this schema's property order with manifest_sha256 omitted entirely."}
+  }
+}

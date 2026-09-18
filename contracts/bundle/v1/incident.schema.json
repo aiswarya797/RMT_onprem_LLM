@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://llm-monitor.local/contracts/bundle/v1/incident.schema.json",
+  "title": "Bundle incident evidence v1",
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "incident_id", "snapshot_revision", "origin", "workflow_state", "requested_window", "effective_window", "cards", "annotations", "alert_history", "evidence_state"],
+  "properties": {
+    "schema_version": {"const": "1.0"}, "incident_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"},
+    "snapshot_revision": {"type": "integer", "minimum": 1}, "origin": {"enum": ["manual", "alert"]}, "workflow_state": {"enum": ["open", "closed"]},
+    "requested_window": {"$ref": "#/$defs/window"}, "effective_window": {"$ref": "#/$defs/window"},
+    "cards": {"type": "array", "maxItems": 14, "items": {"type": "object", "additionalProperties": false, "required": ["card_id", "catalogue_revision", "eligibility", "reason_codes", "input_sha256", "source_ids"], "properties": {"card_id": {"enum": ["EC01", "EC02", "EC03", "EC04", "EC05", "EC06", "EC07"]}, "catalogue_revision": {"const": "1"}, "eligibility": {"enum": ["eligible", "insufficient_evidence"]}, "reason_codes": {"type": "array", "maxItems": 16, "items": {"$ref": "../../collector/v1/common.schema.json#/$defs/safeCode"}}, "input_sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}, "source_ids": {"type": "array", "maxItems": 8, "items": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}}}}},
+    "annotations": {"type": "array", "maxItems": 100, "items": {"type": "object", "additionalProperties": false, "required": ["annotation_id", "declared_time_ms", "text", "provenance"], "properties": {"annotation_id": {"$ref": "../../collector/v1/common.schema.json#/$defs/uuid"}, "declared_time_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, "text": {"type": "string", "maxLength": 2048, "pattern": "^[^<>\\u0000-\\u001f\\u007f]*$"}, "provenance": {"const": "operator_declaration"}}}},
+    "alert_history": {"type": "array", "maxItems": 1000, "items": {"type": "object", "additionalProperties": false, "required": ["sequence", "state", "event_ms", "evidence_sha256"], "properties": {"sequence": {"type": "integer", "minimum": 1}, "state": {"enum": ["OK", "PENDING", "FIRING", "RECOVERING", "RESOLVED", "superseded"]}, "event_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, "evidence_sha256": {"$ref": "../../collector/v1/common.schema.json#/$defs/sha256"}}}},
+    "evidence_state": {"enum": ["complete", "partial", "expired_quota", "expired_age"]}
+  },
+  "$defs": {"window": {"type": "object", "additionalProperties": false, "required": ["start_ms", "end_ms"], "properties": {"start_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}, "end_ms": {"$ref": "../../collector/v1/common.schema.json#/$defs/uint53"}}}}
+}

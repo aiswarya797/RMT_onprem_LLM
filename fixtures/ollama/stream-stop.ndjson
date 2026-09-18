@@ -1,0 +1,2 @@
+{"model":"qwen3:0.6b","response":"SYNTHETIC_SECRET_CANARY_RESPONSE","thinking":"SYNTHETIC_SECRET_CANARY_THINKING","done":false}
+{"model":"qwen3:0.6b","response":"","context":[1,2,3],"done":true,"done_reason":"stop","total_duration":9000000,"load_duration":0,"prompt_eval_count":8,"prompt_eval_duration":2000000,"eval_count":4,"eval_duration":6000000}

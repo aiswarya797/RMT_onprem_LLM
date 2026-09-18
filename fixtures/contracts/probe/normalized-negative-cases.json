@@ -1,0 +1,53 @@
+{
+  "schema_version": "rmt-contract-fixture/1",
+  "fixture_id": "normalized-request-negative-cases",
+  "synthetic": true,
+  "provenance": {
+    "source": "contract_fixture",
+    "runtime_capture": false,
+    "base_sample": "fixtures/contracts/probe/request-sample-valid.json",
+    "base_run": "fixtures/contracts/probe/request-run-valid.json"
+  },
+  "cases": [
+    {
+      "id": "contradictory-client-total",
+      "scope": "sample",
+      "mutations": {
+        "/metrics/request.client.total_ms": 50000
+      },
+      "expected_error": "contradicts its monotonic boundary"
+    },
+    {
+      "id": "client-first-byte-without-boundary",
+      "scope": "sample",
+      "mutations": {
+        "/offsets_ns/first_byte": null,
+        "/offsets_ns/first_thinking": null,
+        "/offsets_ns/first_content": null,
+        "/metrics/request.client.first_content_ms": null,
+        "/field_provenance/request.client.first_content_ms/missing_reason": "not_reached"
+      },
+      "expected_error": "has no first_byte boundary"
+    },
+    {
+      "id": "swapped-terminal-counts",
+      "scope": "run",
+      "mutations": {
+        "/completed_count": 0,
+        "/failed_count": 1
+      },
+      "expected_error": "declared completed count does not match samples"
+    },
+    {
+      "id": "duplicate-sample-id",
+      "scope": "run",
+      "operation": "append_duplicate_first_sample",
+      "mutations": {
+        "/submitted_count": 2,
+        "/completed_count": 2,
+        "/finalization_state": "active"
+      },
+      "expected_error": "duplicate sample ID"
+    }
+  ]
+}

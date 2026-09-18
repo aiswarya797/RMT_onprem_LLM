@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+  <title>Recover LLM Monitor</title>
+  <style>body{font:16px system-ui,-apple-system,sans-serif;line-height:1.55;max-width:760px;margin:3rem auto;padding:0 1rem;color:#17211d}code,pre{background:#f1f3f1}pre{padding:1rem;overflow:auto}a{color:#075e42}h1,h2{line-height:1.2}</style>
+</head>
+<body>
+<p><strong>Same-machine developer preview:</strong> use the local installation role. Remote collection, inference probes, request comparisons and external notifications are experimental and disabled by default. Existing data is preserved. This unsigned build is not a notarized customer release.</p>
+  <nav aria-label="Offline guides"><a href="install.html">Install</a> · <a href="operate.html">Operate</a> · <a href="recover.html">Recover</a></nav>
+  <main>
+    <h1>Recover local services and access</h1>
+    <p>These checks are local and inspect LLM Monitor only.</p>
+    <pre><code>"$HOME/Library/Application Support/LLM Monitor/bin/llm-monitor" status
+launchctl print "gui/$UID/com.llm-monitor.hub"
+launchctl print "gui/$UID/com.llm-monitor.collector"
+tail -n 100 "$HOME/Library/Logs/LLM Monitor/hub.error.log"
+tail -n 100 "$HOME/Library/Logs/LLM Monitor/collector.error.log"</code></pre>
+    <p>For an ordinary permission, path or port problem, resolve the reported cause and rerun these checks. If a restore was interrupted, use the recovery inspection below before running setup.</p>
+    <pre><code>"$HOME/Library/Application Support/LLM Monitor/bin/llm-monitor" install check --role local
+"$HOME/Library/Application Support/LLM Monitor/bin/llm-monitor" setup local</code></pre>
+    <h2>Expired first-admin token</h2>
+    <pre><code>"$HOME/Library/Application Support/LLM Monitor/bin/llm-monitor" admin bootstrap-renew</code></pre>
+    <h2>Verify an encrypted backup</h2>
+    <p>Use the private recovery key stored separately from the backup. Verification checks the archive, manifest, database integrity and referenced files before restoration. It does not replace the installed database.</p>
+    <pre><code>LLM_MONITOR="$HOME/Library/Application Support/LLM Monitor/bin/llm-monitor"
+"$LLM_MONITOR" backup verify --from "/absolute/monitor.age" \
+  --key-file "/absolute/recovery.key" --confirm-deployment "DEPLOYMENT-UUID" --json</code></pre>
+    <h2>Restore to a reviewed recovery point</h2>
+    <p>Record the current deployment ID and generation from <code>status --json</code>, and the backup recovery point from verification. Stop only the monitor's hub LaunchAgent before restore. The command refuses a running or unknown hub and preserves the displaced state. A backup contains only its recorded recovery point; later changes may be missing even when some collector records remain recoverable.</p>
+    <pre><code>launchctl bootout "gui/$UID/com.llm-monitor.hub"
+"$LLM_MONITOR" restore --from "/absolute/monitor.age" \
+  --key-file "/absolute/recovery.key" --confirm-deployment "DEPLOYMENT-UUID" \
+  --deployment-generation "CURRENT-GENERATION-UUID" \
+  --confirm-recovery-point-ms RECOVERY-POINT-MILLISECONDS --json</code></pre>
+    <p>Restore changes the collector CA and security generation, invalidates old sessions and tokens, and requires a new administrator. Return to the local browser after the owner command and choose Check again; the one-use setup handoff is obtained automatically and no token file needs to be found. Previously revoked collectors do not reconnect automatically. Explicitly re-enroll reviewed collectors before resuming their monitoring. Retained old spool data is not automatically authorized for replay.</p>
+    <p>After restore reports completion, load the existing hub LaunchAgent, open the saved local monitor address, and create the new administrator. Then explicitly re-enroll this Mac's retained local collector:</p>
+    <pre><code>launchctl bootstrap "gui/$UID" "$HOME/Library/LaunchAgents/com.llm-monitor.hub.plist"
+# Complete first-administrator setup in the local browser before this command:
+"$LLM_MONITOR" setup local --re-enroll</code></pre>
+    <p>The explicit re-enrollment preserves the local host identity and retained spool files. A remote collector needs a separately reviewed enrollment transfer for its retained host and the new CA fingerprint.</p>
+    <h2>Resume an interrupted restore</h2>
+    <p>Ordinary commands intentionally stop while restore activation is incomplete. This read-only command remains available and reports the verified transaction, recovery point and exact <code>resume_argv</code>:</p>
+    <pre><code>"$LLM_MONITOR" recovery inspect --json</code></pre>
+    <p>For a custom installation, pass the same <code>--installation-root</code> and <code>--runtime-dir</code> values used before interruption. Review the reported recovery point and pass the returned argument tokens to the verified executable. Text mode prints an equivalent safely quoted command. Do not run setup, delete the journal or invent a transaction ID. A missing or damaged journal produces no automatic resume instruction; preserve the installation and its recovery directory for inspection.</p>
+    <h2>Resume a partial removal</h2>
+    <p>A partial removal exits with code 6 and returns <code>retry_arguments</code>. Resolve the reported stop, permission, socket-owner or file-removal failure. Then pass those exact argument tokens to the same verified <code>llm-monitor</code> binary. The normal output prints an equivalent safely quoted <code>Retry:</code> command.</p>
+    <pre><code>VERIFIED_LLM_MONITOR="/path/to/the/same/verified/llm-monitor"
+"$VERIFIED_LLM_MONITOR" \
+  --installation-root "$HOME" \
+  --runtime-dir "$HOME/Library/Caches/LLM Monitor/run" \
+  uninstall --keep-data --deployment-generation "GENERATION-UUID"</code></pre>
+    <p>The authenticated receipt at <code>~/Library/Application Support/LLM Monitor/removal-receipt.json</code> remains until removal fully succeeds and binds the retry to its deployment ID, generation and mode. Do not run setup or delete the receipt manually between attempts. If the final receipt deletion failed after the installed executable was removed, restage the same already-verified package or use its externally staged binary, then run the returned arguments. Purge retries also include the original <code>--confirm-deployment</code> value and <code>--backup-offer-acknowledged</code>.</p>
+    <p>Do not kill an unrelated port owner, edit a running database or delete LaunchAgent files manually. Use <code>uninstall --keep-data --preview</code> to enumerate product-owned service files while retaining protected state.</p>
+  </main>
+</body>
+</html>
